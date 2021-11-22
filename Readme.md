@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Николай Егоров](https://up.htmlacademy.ru/ecmascript/16/user/1204805).
-* Наставник: `Неизвестно`.
+* Наставник: [Михаил Кислый](https://htmlacademy.ru/profile/smart-grizzly).
 
 ---
 
