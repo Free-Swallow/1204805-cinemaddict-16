@@ -5,12 +5,12 @@ const createPopupFilm = (data) => {
     writers,
     actors,
     releaseYear,
-    releaseMounthDay,
+    releaseMonthDay,
     runtime,
     country,
     kind,
     ageRating,
-    reating,
+    rating,
     description,
     comments,
     isFavorite,
@@ -26,7 +26,7 @@ const createPopupFilm = (data) => {
 
   for (let i = 0; i < kind.length; i++) {
     const current = kind[i];
-    const template = `<span className="film-details__genre">${current}</span>`;
+    const template = `<span class="film-details__genre">${current}</span>`;
     listKind.push(template);
   }
 
@@ -51,7 +51,7 @@ const createPopupFilm = (data) => {
             </div>
 
             <div class="film-details__rating">
-              <p class="film-details__total-rating">${reating}</p>
+              <p class="film-details__total-rating">${rating}</p>
             </div>
           </div>
 
@@ -70,7 +70,7 @@ const createPopupFilm = (data) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${releaseMounthDay} ${releaseYear}</td>
+              <td class="film-details__cell">${releaseMonthDay} ${releaseYear}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>

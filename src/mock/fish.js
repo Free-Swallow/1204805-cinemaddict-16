@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import {getRandomNumber, getRandomFractionalNumber, getRandomNumberValues} from '../utils.js';
 
-const minReating = 0;
-const maxReating = 10;
-const roundingReating = 1;
-const maxCommets = 15;
+const minRating = 0;
+const maxRating = 10;
+const roundingRating = 1;
+const maxComments = 15;
 const minComments = 0;
 
 const movieNames = [
@@ -181,7 +181,7 @@ const renderComments = () =>(
   }
 );
 
-const getCommentsArr = () => Array.from({length: getRandomNumber(minComments, maxCommets)}, renderComments);
+const getCommentsArr = () => Array.from({length: getRandomNumber(minComments, maxComments)}, renderComments);
 
 const getRuntime = () => {
   const isHour = getRandomNumber(0, 2);
@@ -196,15 +196,12 @@ const getRuntime = () => {
   return runtime.join(' ');
 };
 
-const getRealeseDay = () => {
+const getReleaseDay = () => {
   const period = getRandomNumber(-100, -3);
   return dayjs().add(period, 'day').format('D MMMM');
 };
 
-const getKinds = () => {
-  const renderActors = getRandomNumberValues(listKinds, 3);
-  return renderActors;
-};
+const getKinds = () => getRandomNumberValues(listKinds, 3);
 
 const renderData = () => (
   {
@@ -215,10 +212,10 @@ const renderData = () => (
     poster: urlPosters[getRandomNumber(0, urlPosters.length - 1)],
     description: arrDescription(),
     comments: getCommentsArr(),
-    reating: getRandomFractionalNumber(minReating, maxReating, roundingReating),
+    rating: getRandomFractionalNumber(minRating, maxRating, roundingRating),
     ageRating: getRandomNumber(0, 21),
     releaseYear: listYears[getRandomNumber(0, listYears.length - 1)],
-    releaseMounthDay: getRealeseDay(),
+    releaseMonthDay: getReleaseDay(),
     kind: getKinds(),
     country: listCountry[getRandomNumber(0, listCountry.length - 1)],
     runtime: getRuntime(),

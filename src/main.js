@@ -11,11 +11,10 @@ import {getNumberFilter} from './mock/filter.js';
 import {createComment} from './view/comment-view.js';
 import {bySort} from './utils.js';
 
-
-const QUANITY_CREATE_CARDS_START = 5;
-const QUANITY_CREATE_CARDS_STEP = 5;
-const QUANITY_CREATE_CARDS_EXTRA = 2;
-const QUANITY_CREATE_MOCKS = 16;
+const QUANTITY_CREATE_CARDS_START = 5;
+const QUANTITY_CREATE_CARDS_STEP = 5;
+const QUANTITY_CREATE_CARDS_EXTRA = 2;
+const QUANTITY_CREATE_MOCKS = 16;
 
 const bodyNode = document.querySelector('body');
 const headerNode = bodyNode.querySelector('.header');
@@ -23,13 +22,13 @@ const mainNode = bodyNode.querySelector('.main');
 const footerNode = bodyNode.querySelector('.footer');
 const footerStatisticsNode = footerNode.querySelector('.footer__statistics');
 
-const cardsCreate = Array.from({length: QUANITY_CREATE_MOCKS}, renderData);
+const cardsCreate = Array.from({length: QUANTITY_CREATE_MOCKS}, renderData);
 
 const getFilterArray = getNumberFilter(cardsCreate);
 
 const sortFilmsComments = cardsCreate.slice(0, cardsCreate.length).sort(bySort('comments'));
 
-const sortFilmsReating =  cardsCreate.slice(0, cardsCreate.length).sort(bySort('reating'));
+const sortFilmsRating =  cardsCreate.slice(0, cardsCreate.length).sort(bySort('rating'));
 
 renderTemplate(headerNode, createUserRating(), RenderPosition.BEFOREEND);
 renderTemplate(mainNode, createFilterTemplate(getFilterArray), RenderPosition.AFTERBEGIN);
@@ -48,22 +47,22 @@ const popupListCommentNode = bodyNode.querySelector('.film-details__comments-lis
 
 renderTemplate(popupListCommentNode, createComment(cardsCreate[0]), RenderPosition.BEFOREEND);
 
-for (let i = 0; i < Math.min(cardsCreate.length, QUANITY_CREATE_CARDS_START); i++) {
+for (let i = 0; i < Math.min(cardsCreate.length, QUANTITY_CREATE_CARDS_START); i++) {
   renderTemplate(filmsListWrapperNode, createCardTemplate(cardsCreate[i]), RenderPosition.BEFOREEND);
 }
 
 if (filmsListWrapperNode.children.length < cardsCreate.length) {
-  let showMoreFilms = QUANITY_CREATE_CARDS_STEP;
+  let showMoreFilms = QUANTITY_CREATE_CARDS_STEP;
   renderTemplate(filmsListNode, createButtonShowMoreTemplate(), RenderPosition.BEFOREEND);
 
   const loadMoreButtonNode = filmsListNode.querySelector('.films-list__show-more');
   loadMoreButtonNode.addEventListener('click', (evt) => {
     evt.preventDefault();
     cardsCreate
-      .slice(showMoreFilms, showMoreFilms + QUANITY_CREATE_CARDS_STEP)
+      .slice(showMoreFilms, showMoreFilms + QUANTITY_CREATE_CARDS_STEP)
       .forEach((films) => renderTemplate(filmsListWrapperNode, createCardTemplate(films), RenderPosition.BEFOREEND));
 
-    showMoreFilms += QUANITY_CREATE_CARDS_STEP;
+    showMoreFilms += QUANTITY_CREATE_CARDS_STEP;
 
     if (filmsListWrapperNode.children.length >= cardsCreate.length) {
       loadMoreButtonNode.remove();
@@ -71,11 +70,11 @@ if (filmsListWrapperNode.children.length < cardsCreate.length) {
   });
 }
 
-for (let i = 0; i < QUANITY_CREATE_CARDS_EXTRA; i++) {
-  renderTemplate(filmsListTopRatedNode, createCardTemplate(sortFilmsReating[i]), RenderPosition.AFTERBEGIN);
+for (let i = 0; i < QUANTITY_CREATE_CARDS_EXTRA; i++) {
+  renderTemplate(filmsListTopRatedNode, createCardTemplate(sortFilmsRating[i]), RenderPosition.AFTERBEGIN);
 }
 
-for (let i = 0; i < QUANITY_CREATE_CARDS_EXTRA; i++) {
+for (let i = 0; i < QUANTITY_CREATE_CARDS_EXTRA; i++) {
   renderTemplate(filmsListMostCommentedNode, createCardTemplate(sortFilmsComments[i]), RenderPosition.AFTERBEGIN);
 }
 
