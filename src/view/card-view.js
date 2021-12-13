@@ -1,188 +1,34 @@
-const createCards1 = (
-  `<article class="film-card">
+const createCardTemplate = (data) => {
+  const {
+    name,
+    poster,
+    description,
+    comments,
+    rating,
+    releaseYear,
+    kind,
+    runtime
+  } = data;
+
+  return `<article class="film-card">
           <a class="film-card__link">
-            <h3 class="film-card__title">The Dance of Life</h3>
-            <p class="film-card__rating">8.3</p>
+            <h3 class="film-card__title">${name}</h3>
+            <p class="film-card__rating">${rating}</p>
             <p class="film-card__info">
-              <span class="film-card__year">1929</span>
-              <span class="film-card__duration">1h 55m</span>
-              <span class="film-card__genre">Musical</span>
+              <span class="film-card__year">${releaseYear}</span>
+              <span class="film-card__duration">${runtime}</span>
+              <span class="film-card__genre">${kind}</span>
             </p>
-            <img src="./images/posters/the-dance-of-life.jpg" alt="" class="film-card__poster">
-            <p class="film-card__description">Burlesque comic Ralph "Skid" Johnson (Skelly), and specialty dancer Bonny Lee King (Carroll), end up together on a cold, rainy night at a tr…</p>
-            <span class="film-card__comments">5 comments</span>
+            <img src=${poster} alt="" class="film-card__poster">
+            <p class="film-card__description">${description}</p>
+            <span class="film-card__comments">${comments.length} comments</span>
           </a>
           <div class="film-card__controls">
             <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
             <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
             <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
           </div>
-        </article>`
-);
+        </article>`;
+};
 
-const createCards2 = (
-  `<article class="film-card">
-          <a class="film-card__link">
-            <h3 class="film-card__title">Sagebrush Trail</h3>
-            <p class="film-card__rating">3.2</p>
-            <p class="film-card__info">
-              <span class="film-card__year">1933</span>
-              <span class="film-card__duration">54m</span>
-              <span class="film-card__genre">Western</span>
-            </p>
-            <img src="./images/posters/sagebrush-trail.jpg" alt="" class="film-card__poster">
-            <p class="film-card__description">Sentenced for a murder he did not commit, John Brant escapes from prison determined to find the real killer. By chance Brant's narrow escap…</p>
-            <span class="film-card__comments">89 comments</span>
-          </a>
-          <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--active" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
-          </div>
-        </article>`
-);
-
-const createCards3 = (
-  `<article class="film-card">
-          <a class="film-card__link">
-            <h3 class="film-card__title">The Man with the Golden Arm</h3>
-            <p class="film-card__rating">9.0</p>
-            <p class="film-card__info">
-              <span class="film-card__year">1955</span>
-              <span class="film-card__duration">1h 59m</span>
-              <span class="film-card__genre">Drama</span>
-            </p>
-            <img src="./images/posters/the-man-with-the-golden-arm.jpg" alt="" class="film-card__poster">
-            <p class="film-card__description">Frankie Machine (Frank Sinatra) is released from the federal Narcotic Farm in Lexington, Kentucky with a set of drums and a new outlook on…</p>
-            <span class="film-card__comments">18 comments</span>
-          </a>
-          <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--active" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
-          </div>
-        </article>`
-);
-
-const createCards4 = (
-  `<article class="film-card">
-          <a class="film-card__link">
-            <h3 class="film-card__title">Santa Claus Conquers the Martians</h3>
-            <p class="film-card__rating">2.3</p>
-            <p class="film-card__info">
-              <span class="film-card__year">1964</span>
-              <span class="film-card__duration">1h 21m</span>
-              <span class="film-card__genre">Comedy</span>
-            </p>
-            <img src="./images/posters/santa-claus-conquers-the-martians.jpg" alt="" class="film-card__poster">
-            <p class="film-card__description">The Martians Momar ("Mom Martian") and Kimar ("King Martian") are worried that their children Girmar ("Girl Martian") and Bomar ("Boy Marti…</p>
-            <span class="film-card__comments">465 comments</span>
-          </a>
-          <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite film-card__controls-item--active" type="button">Mark as favorite</button>
-          </div>
-        </article>`
-);
-
-const createCards5 = (
-  `<article class="film-card">
-          <a class="film-card__link">
-            <h3 class="film-card__title">Popeye the Sailor Meets Sindbad the Sailor</h3>
-            <p class="film-card__rating">6.3</p>
-            <p class="film-card__info">
-              <span class="film-card__year">1936</span>
-              <span class="film-card__duration">16m</span>
-              <span class="film-card__genre">Cartoon</span>
-            </p>
-            <img src="./images/posters/popeye-meets-sinbad.png" alt="" class="film-card__poster">
-            <p class="film-card__description">In this short, Sindbad the Sailor (presumably Bluto playing a "role") proclaims himself, in song, to be the greatest sailor, adventurer and…</p>
-            <span class="film-card__comments">0 comments</span>
-          </a>
-          <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist film-card__controls-item--active" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--active" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite film-card__controls-item--active" type="button">Mark as favorite</button>
-          </div>
-        </article>`
-);
-
-const createCards6 = (
-  `<article class="film-card">
-          <a class="film-card__link">
-            <h3 class="film-card__title">The Man with the Golden Arm</h3>
-            <p class="film-card__rating">9.0</p>
-            <p class="film-card__info">
-              <span class="film-card__year">1955</span>
-              <span class="film-card__duration">1h 59m</span>
-              <span class="film-card__genre">Drama</span>
-            </p>
-            <img src="./images/posters/the-man-with-the-golden-arm.jpg" alt="" class="film-card__poster">
-            <p class="film-card__description">Frankie Machine (Frank Sinatra) is released from the federal Narcotic Farm in Lexington, Kentucky with a set of drums and a new outlook on…</p>
-            <span class="film-card__comments">18 comments</span>
-          </a>
-          <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--active" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
-          </div>
-        </article>`
-);
-
-const createCards7 = (
-  `<article class="film-card">
-          <a class="film-card__link">
-            <h3 class="film-card__title">The Great Flamarion</h3>
-            <p class="film-card__rating">8.9</p>
-            <p class="film-card__info">
-              <span class="film-card__year">1945</span>
-              <span class="film-card__duration">1h 18m</span>
-              <span class="film-card__genre">Mystery</span>
-            </p>
-            <img src="./images/posters/the-great-flamarion.jpg" alt="" class="film-card__poster">
-            <p class="film-card__description">The film opens following a murder at a cabaret in Mexico City in 1936, and then presents the events leading up to it in flashback. The Grea…</p>
-            <span class="film-card__comments">12 comments</span>
-          </a>
-          <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
-          </div>
-        </article>`
-);
-
-const createCards8 = (
-  `<article class="film-card">
-          <a class="film-card__link">
-            <h3 class="film-card__title">The Man with the Golden Arm</h3>
-            <p class="film-card__rating">9.0</p>
-            <p class="film-card__info">
-              <span class="film-card__year">1955</span>
-              <span class="film-card__duration">1h 59m</span>
-              <span class="film-card__genre">Drama</span>
-            </p>
-            <img src="./images/posters/the-man-with-the-golden-arm.jpg" alt="" class="film-card__poster">
-            <p class="film-card__description">Frankie Machine (Frank Sinatra) is released from the federal Narcotic Farm in Lexington, Kentucky with a set of drums and a new outlook on…</p>
-            <span class="film-card__comments">18 comments</span>
-          </a>
-          <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched film-card__controls-item--active" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
-          </div>
-        </article>`
-);
-
-const filmsCards = [
-  createCards1,
-  createCards2,
-  createCards3,
-  createCards4,
-  createCards5,
-  createCards6,
-  createCards7,
-  createCards8
-];
-
-export {filmsCards};
+export {createCardTemplate};
