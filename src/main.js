@@ -102,7 +102,7 @@ if (filmsListWrapperNode.children.length < cardsCreate.length) {
     evt.preventDefault();
     cardsCreate
       .slice(showMoreFilms, showMoreFilms + QUANTITY_CREATE_CARDS_STEP)
-      .forEach((films) => render(filmsListWrapperNode, new CardView(films).element, RenderPosition.BEFOREEND));
+      .forEach((films) =>  renderCardFilm(filmsListWrapperNode, films));
 
     showMoreFilms += QUANTITY_CREATE_CARDS_STEP;
 
