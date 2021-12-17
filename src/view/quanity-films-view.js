@@ -4,7 +4,7 @@ const createMovieCounterTemplate = () => (
   '<p>130 291 movies inside</p>'
 );
 
-class MovieCounterView {
+class QuantityFilmsView {
   #element = null;
 
   get element() {
@@ -24,4 +24,4 @@ class MovieCounterView {
   }
 }
 
-export default MovieCounterView;
+export default QuantityFilmsView;

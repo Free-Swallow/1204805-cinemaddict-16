@@ -5,7 +5,7 @@ import MainNavView from './view/main-nav-view.js';
 import UserRatingView from './view/user-rating-view.js';
 import ListFilmsView from './view/list-films-view';
 import PopupFilmView from './view/popup-film-view.js';
-import MovieCounterView from './view/quanity-films-view.js';
+import QuantityFilmsView from './view/quanity-films-view.js';
 import CardView from './view/card-view.js';
 import ButtonShowMoreView from './view/button-show-more-view.js';
 import {renderData} from './mock/fish.js';
@@ -69,7 +69,7 @@ const renderCardFilm = (cardContainer, card) => {
 render(headerNode, new UserRatingView().element, RenderPosition.BEFOREEND);
 render(mainNode, mainMenuElement, RenderPosition.AFTERBEGIN);
 render(mainNode, new ListFilmsView().element, RenderPosition.BEFOREEND);
-render(footerStatisticsNode, new MovieCounterView().element, RenderPosition.BEFOREEND);
+render(footerStatisticsNode, new QuantityFilmsView().element, RenderPosition.BEFOREEND);
 
 const mainMenuNode = mainNode.querySelector('.main-navigation');
 const filmsNode = bodyNode.querySelector('.films');
