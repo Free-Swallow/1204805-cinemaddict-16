@@ -1,3 +1,5 @@
+import {createElement} from '../renderTemplate.js';
+
 const createCardTemplate = (data) => {
   const {
     name,
@@ -17,7 +19,7 @@ const createCardTemplate = (data) => {
             <p class="film-card__info">
               <span class="film-card__year">${releaseYear}</span>
               <span class="film-card__duration">${runtime}</span>
-              <span class="film-card__genre">${kind}</span>
+              <span class="film-card__genre">${kind.join(', ')}</span>
             </p>
             <img src=${poster} alt="" class="film-card__poster">
             <p class="film-card__description">${description}</p>
@@ -31,4 +33,29 @@ const createCardTemplate = (data) => {
         </article>`;
 };
 
-export {createCardTemplate};
+class CardView {
+  #element = null;
+  #data = null;
+
+  constructor(data) {
+    this.#data = data;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createCardTemplate(this.#data);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+export default CardView;
