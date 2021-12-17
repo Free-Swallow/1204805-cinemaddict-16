@@ -1,30 +1,29 @@
-const createFilterItem = (film, isChecked) => {
-  const {name, number} = film;
+import {createElement} from '../renderTemplate.js';
 
-  return (
-    `<a href="#${name}" class="main-navigation__item">${name} <span class="main-navigation__item-count" ${isChecked ? 'checked' : ''}
-    ${number === 0 ? 'disabled' : ''}>${number}</span></a>`
-  );
-};
-
-const createFilterTemplate = (data) => {
-  const filterItem = data
-    .map((filter, index) => createFilterItem(filter, index === 0))
-    .join('');
-
-  return `<nav class="main-navigation">
-     <div class="main-navigation__items">
-       <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
-       ${filterItem}
-     </div>
+const createFilterTemplate = () => (
+  `<nav class="main-navigation">
      <a href="#stats" class="main-navigation__additional">Stats</a>
-   </nav>
+   </nav>`
+);
 
-    <ul class="sort">
-     <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-     <li><a href="#" class="sort__button">Sort by date</a></li>
-     <li><a href="#" class="sort__button">Sort by rating</a></li>
-   </ul>`;
-};
+class MainMenuView {
+  #element = null;
 
-export {createFilterTemplate};
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilterTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+export default MainMenuView;

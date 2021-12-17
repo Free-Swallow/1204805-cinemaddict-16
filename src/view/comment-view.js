@@ -1,8 +1,11 @@
-const createComment = (data) => {
+import {createElement} from '../renderTemplate.js';
+
+const createCommentTemplate = (data) => {
   const {comments} = data;
   const arrComments = [];
 
   for (let i = 0; i < comments.length; i++) {
+
     const current = comments[i];
     const {comment, date, author, emotion} = current;
     const template = `<li class="film-details__comment">
@@ -25,4 +28,29 @@ const createComment = (data) => {
   return arrComments.join('');
 };
 
-export {createComment};
+class CommentView {
+  #element = null;
+  #data = null;
+
+  constructor(data) {
+    this.#data = data;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createCommentTemplate(this.#data);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+export default CommentView;

@@ -1,4 +1,6 @@
-const createPopupFilm = (data) => {
+import {createElement} from '../renderTemplate.js';
+
+const createPopupFilmTemplate = (data) => {
   const {
     name,
     director,
@@ -28,6 +30,7 @@ const createPopupFilm = (data) => {
     const current = kind[i];
     const template = `<span class="film-details__genre">${current}</span>`;
     listKind.push(template);
+
   }
 
   return `<section class="film-details">
@@ -83,8 +86,8 @@ const createPopupFilm = (data) => {
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
               <td class="film-details__cell">
-                ${listKind.join(', ')}
-               </td>
+                ${listKind.join('')}
+              </td>
             </tr>
           </table>
 
@@ -143,4 +146,29 @@ const createPopupFilm = (data) => {
 </section>`;
 };
 
-export {createPopupFilm};
+class PopupFilmView {
+  #element = null;
+  #data = null;
+
+  constructor(data) {
+    this.#data = data;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createPopupFilmTemplate(this.#data);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+export default PopupFilmView;
