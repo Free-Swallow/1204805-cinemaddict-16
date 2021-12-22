@@ -1,11 +1,22 @@
 import {createElement} from '../renderTemplate.js';
 
-const createMovieCounterTemplate = () => (
-  '<p>130 291 movies inside</p>'
-);
+const createMovieCounterTemplate = (data) => {
+  let quantityFilms = '130 291';
+
+  if (data.length === 0) {
+    quantityFilms = '0';
+  }
+
+  return `<p>${quantityFilms} movies inside</p>`;
+};
 
 class QuantityFilmsView {
   #element = null;
+  #data = null;
+
+  constructor(data) {
+    this.#data = data;
+  }
 
   get element() {
     if (!this.#element) {
@@ -16,7 +27,7 @@ class QuantityFilmsView {
   }
 
   get template() {
-    return createMovieCounterTemplate();
+    return createMovieCounterTemplate(this.#data);
   }
 
   removeElement() {

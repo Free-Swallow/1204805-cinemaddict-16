@@ -1,7 +1,7 @@
 const checkFilter = {
-  watchlist: (data) => data.filter((film) => film.isBookmark).length,
-  history: (data) => data.filter((film) => film.isWatched).length,
-  favorites: (data) => data.filter((film) => film.isFavorite).length,
+  Watchlist: (data) => data.filter((film) => film.isBookmark).length,
+  History: (data) => data.filter((film) => film.isWatched).length,
+  Favorites: (data) => data.filter((film) => film.isFavorite).length,
 };
 
 const getNumberFilter = (data) => Object.entries(checkFilter).map(
