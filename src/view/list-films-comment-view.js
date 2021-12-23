@@ -9,7 +9,7 @@ const createCommentListTemplate = () => (
     </section>`
 );
 
-class CommentListView {
+class ListFilmsCommentView {
   #element = null;
 
   get element() {
@@ -29,5 +29,5 @@ class CommentListView {
   }
 }
 
-export default CommentListView;
+export default ListFilmsCommentView;
 

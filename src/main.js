@@ -12,10 +12,10 @@ import {renderData} from './mock/fish.js';
 import {getNumberFilter} from './mock/filter.js';
 import ListFilmsContainerView from './view/list-films-container-view.js';
 import CommentView from './view/comment-view.js';
-import TopListView from './view/list-films-top-view.js';
-import CommentListView from './view/list-films-comment-view.js';
-import FilmsTitleView from './view/list-films-title-view.js';
-import FilmsListEmptyView from './view/list-films-empty-view.js';
+import ListFilmsTopView from './view/list-films-top-view.js';
+import ListFilmsCommentView from './view/list-films-comment-view.js';
+import ListFilmsTitleView from './view/list-films-title-view.js';
+import ListFilmsEmptyView from './view/list-films-empty-view.js';
 import {bySort} from './utils.js';
 
 const QUANTITY_CREATE_CARDS_START = 5;
@@ -33,14 +33,18 @@ const mainNode = bodyNode.querySelector('.main');
 const footerNode = bodyNode.querySelector('.footer');
 const footerStatisticsNode = footerNode.querySelector('.footer__statistics');
 
+// ГЕНЕРАЦИЯ МАССИВА С КАРТОЧКАМИ ФИЛЬМОВ!
+
 const cardsCreate = Array.from({length: QUANTITY_CREATE_MOCKS}, renderData);
+
+// СЧЕТЧИК ФИЛЬТРОВ!
 
 const getFilterArray = getNumberFilter(cardsCreate);
 
+// СОРТИРОВКА КАРТОЧЕК ДЛЯ БЛОКА EXTRA!
+
 const sortFilmsComments = cardsCreate.slice(0, cardsCreate.length).sort(bySort('comments'));
 const sortFilmsRating =  cardsCreate.slice(0, cardsCreate.length).sort(bySort('rating'));
-
-const mainMenuElement = new MainMenuView().element;
 
 // СОЗДАНИЕ ПОП-АПА!
 
@@ -86,7 +90,9 @@ const renderCardFilm = (cardContainer, card) => {
   render(cardContainer, cardComponent.element, RenderPosition.BEFOREEND);
 };
 
-render(mainNode, mainMenuElement, RenderPosition.AFTERBEGIN);
+// ДОБАВЛЕНИЕ ВНУТРЕННИХ БЛОКОВ И ОБЪЯВЛЕНИЕ УЗЛОВ!
+
+render(mainNode, new MainMenuView().element, RenderPosition.AFTERBEGIN);
 render(mainNode, new ListFilmsView().element, RenderPosition.BEFOREEND);
 render(footerStatisticsNode, new QuantityFilmsView(cardsCreate).element, RenderPosition.BEFOREEND);
 
@@ -110,11 +116,11 @@ const createSortList = () => {
 // СОЗДАНИЕ ЗАГОЛОВКА СТРАНИЦЫ!
 
 const createEmptyList = () => {
-  render(filmsListNode, new FilmsListEmptyView().element, RenderPosition.BEFOREEND);
+  render(filmsListNode, new ListFilmsEmptyView().element, RenderPosition.BEFOREEND);
 };
 
 const createFilmsTitle = () => {
-  render(filmsListNode, new FilmsTitleView().element, RenderPosition.BEFOREEND);
+  render(filmsListNode, new ListFilmsTitleView().element, RenderPosition.BEFOREEND);
 };
 
 // ОТРИСОВКА КАРТОЧЕК ФИЛЬМОВ!
@@ -151,8 +157,8 @@ const createMainBlockFilms = () => {
 // ОТРИСОВКА БЛОКА ЭКСТРА!
 
 const createExtraBlock = () => {
-  render(filmsNode, new TopListView().element, RenderPosition.BEFOREEND);
-  render(filmsNode, new CommentListView().element, RenderPosition.BEFOREEND);
+  render(filmsNode, new ListFilmsTopView().element, RenderPosition.BEFOREEND);
+  render(filmsNode, new ListFilmsCommentView().element, RenderPosition.BEFOREEND);
   const filmsListTopRatedWrapperNode = filmsNode.querySelector('.films-list--extra:nth-child(2)');
   const filmsListMostCommentedWrapperNode = filmsNode.querySelector('.films-list--extra:nth-child(3)');
   const filmsListTopRatedNode = filmsListTopRatedWrapperNode.querySelector('.films-list__container');
@@ -166,6 +172,8 @@ const createExtraBlock = () => {
     renderCardFilm(filmsListMostCommentedNode, sortFilmsComments[i]);
   }
 };
+
+// ГЕНЕРАЦИЯ СТАРТОВОЙ СТРАНИЦЫ!
 
 const createPageStart = () => {
   if (cardsCreate.length === 0) {

@@ -4,7 +4,7 @@ const createFilmsListEmptyTemplate = () => (
   '<h2 class="films-list__title">There are no movies in our database</h2>'
 );
 
-class FilmsListEmptyView {
+class ListFilmsEmptyView {
   #element = null;
 
   get element() {
@@ -24,4 +24,4 @@ class FilmsListEmptyView {
   }
 }
 
-export default FilmsListEmptyView;
+export default ListFilmsEmptyView;

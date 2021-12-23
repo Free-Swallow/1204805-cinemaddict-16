@@ -4,7 +4,7 @@ const createFilmsTitleTemplate = () => (
   '<h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>'
 );
 
-class FilmsTitleView {
+class ListFilmsTitleView {
   #element = null;
 
   get element() {
@@ -24,4 +24,4 @@ class FilmsTitleView {
   }
 }
 
-export default FilmsTitleView;
+export default ListFilmsTitleView;

@@ -9,7 +9,7 @@ const createTopListTemplate = () => (
     </section>`
 );
 
-class TopListView {
+class ListFilmsTopView {
   #element = null;
 
   get element() {
@@ -29,5 +29,5 @@ class TopListView {
   }
 }
 
-export default TopListView;
+export default ListFilmsTopView;
 
