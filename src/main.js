@@ -10,13 +10,22 @@ import CardView from './view/card-view.js';
 import ButtonShowMoreView from './view/button-show-more-view.js';
 import {renderData} from './mock/fish.js';
 import {getNumberFilter} from './mock/filter.js';
+import ListFilmsContainerView from './view/list-films-container-view.js';
 import CommentView from './view/comment-view.js';
+import ListFilmsTopView from './view/list-films-top-view.js';
+import ListFilmsCommentView from './view/list-films-comment-view.js';
+import ListFilmsTitleView from './view/list-films-title-view.js';
+import ListFilmsEmptyView from './view/list-films-empty-view.js';
 import {bySort} from './utils.js';
 
 const QUANTITY_CREATE_CARDS_START = 5;
 const QUANTITY_CREATE_CARDS_STEP = 5;
 const QUANTITY_CREATE_CARDS_EXTRA = 2;
 const QUANTITY_CREATE_MOCKS = 16;
+const KeysClose = {
+  ESC: 'Esc',
+  ESCAPE: 'Escape',
+};
 
 const bodyNode = document.querySelector('body');
 const headerNode = bodyNode.querySelector('.header');
@@ -24,14 +33,18 @@ const mainNode = bodyNode.querySelector('.main');
 const footerNode = bodyNode.querySelector('.footer');
 const footerStatisticsNode = footerNode.querySelector('.footer__statistics');
 
+// ГЕНЕРАЦИЯ МАССИВА С КАРТОЧКАМИ ФИЛЬМОВ!
+
 const cardsCreate = Array.from({length: QUANTITY_CREATE_MOCKS}, renderData);
+
+// СЧЕТЧИК ФИЛЬТРОВ!
 
 const getFilterArray = getNumberFilter(cardsCreate);
 
+// СОРТИРОВКА КАРТОЧЕК ДЛЯ БЛОКА EXTRA!
+
 const sortFilmsComments = cardsCreate.slice(0, cardsCreate.length).sort(bySort('comments'));
 const sortFilmsRating =  cardsCreate.slice(0, cardsCreate.length).sort(bySort('rating'));
-
-const mainMenuElement = new MainMenuView().element;
 
 // СОЗДАНИЕ ПОП-АПА!
 
@@ -41,12 +54,23 @@ const renderPopup = (card) => {
   const commentComponent = new CommentView(card);
   bodyNode.classList.add('hide-overflow');
 
-  render(bodyNode, popupComponent.element, RenderPosition.BEFOREEND);
-
-  popupClose.addEventListener('click', () => {
+  function onRemovePopup() {
     popupComponent.element.remove();
     bodyNode.classList.remove('hide-overflow');
-  });
+    document.removeEventListener('keydown', onCloseKey);
+  }
+
+  function onCloseKey(evt) {
+    if (evt.key === KeysClose.ESC || evt.key === KeysClose.ESCAPE) {
+      evt.preventDefault();
+      onRemovePopup();
+    }
+  }
+
+  render(bodyNode, popupComponent.element, RenderPosition.BEFOREEND);
+
+  document.addEventListener('keydown', onCloseKey);
+  popupClose.addEventListener('click', onRemovePopup);
 
   const popupListCommentNode = bodyNode.querySelector('.film-details__comments-list');
 
@@ -66,61 +90,104 @@ const renderCardFilm = (cardContainer, card) => {
   render(cardContainer, cardComponent.element, RenderPosition.BEFOREEND);
 };
 
-render(headerNode, new UserRatingView().element, RenderPosition.BEFOREEND);
-render(mainNode, mainMenuElement, RenderPosition.AFTERBEGIN);
+// ДОБАВЛЕНИЕ ВНУТРЕННИХ БЛОКОВ И ОБЪЯВЛЕНИЕ УЗЛОВ!
+
+render(mainNode, new MainMenuView().element, RenderPosition.AFTERBEGIN);
 render(mainNode, new ListFilmsView().element, RenderPosition.BEFOREEND);
-render(footerStatisticsNode, new QuantityFilmsView().element, RenderPosition.BEFOREEND);
+render(footerStatisticsNode, new QuantityFilmsView(cardsCreate).element, RenderPosition.BEFOREEND);
 
 const mainMenuNode = mainNode.querySelector('.main-navigation');
 const filmsNode = bodyNode.querySelector('.films');
 const filmsListNode = filmsNode.querySelector('.films-list');
-const filmsListWrapperNode = filmsListNode.querySelector('.films-list__container');
-const filmsListTopRatedWrapperNode = filmsNode.querySelector('.films-list--extra:nth-child(2)');
-const filmsListMostCommentedWrapperNode = filmsNode.querySelector('.films-list--extra:nth-child(3)');
-const filmsListTopRatedNode = filmsListTopRatedWrapperNode.querySelector('.films-list__container');
-const filmsListMostCommentedNode = filmsListMostCommentedWrapperNode.querySelector('.films-list__container');
+
+// СОЗДАНИЕ БЛОКА РЕЙТИНГ ЮЗЕРА!
+
+const createUserRatingView = () => {
+  render(headerNode, new UserRatingView().element, RenderPosition.BEFOREEND);
+};
 
 // ОТРИСОВКА ГЛАВНОГО МЕНЮ!
 
-render(mainMenuNode, new SortListView().element, RenderPosition.AFTEREND);
 render(mainMenuNode, new MainNavView(getFilterArray).element, RenderPosition.AFTERBEGIN);
+const createSortList = () => {
+  render(mainMenuNode, new SortListView().element, RenderPosition.AFTEREND);
+};
+
+// СОЗДАНИЕ ЗАГОЛОВКА СТРАНИЦЫ!
+
+const createEmptyList = () => {
+  render(filmsListNode, new ListFilmsEmptyView().element, RenderPosition.BEFOREEND);
+};
+
+const createFilmsTitle = () => {
+  render(filmsListNode, new ListFilmsTitleView().element, RenderPosition.BEFOREEND);
+};
 
 // ОТРИСОВКА КАРТОЧЕК ФИЛЬМОВ!
 
-for (let i = 0; i < Math.min(cardsCreate.length, QUANTITY_CREATE_CARDS_START); i++) {
-  renderCardFilm(filmsListWrapperNode, cardsCreate[i]);
-}
+const createMainBlockFilms = () => {
+  render(filmsListNode, new ListFilmsContainerView().element, RenderPosition.BEFOREEND);
+  const filmsListWrapperNode = filmsListNode.querySelector('.films-list__container');
+  for (let i = 0; i < Math.min(cardsCreate.length, QUANTITY_CREATE_CARDS_START); i++) {
+    renderCardFilm(filmsListWrapperNode, cardsCreate[i]);
+  }
 
-// ОТРИСОВКА КНОПКИ "ПОКАЗАТЬ БОЛЬШЕ"!
+  // ОТРИСОВКА КНОПКИ "ПОКАЗАТЬ БОЛЬШЕ"!
 
-if (filmsListWrapperNode.children.length < cardsCreate.length) {
-  let showMoreFilms = QUANTITY_CREATE_CARDS_STEP;
-  render(filmsListNode, new ButtonShowMoreView().element, RenderPosition.BEFOREEND);
+  if (filmsListWrapperNode.children.length < cardsCreate.length) {
+    let showMoreFilms = QUANTITY_CREATE_CARDS_STEP;
+    render(filmsListNode, new ButtonShowMoreView().element, RenderPosition.BEFOREEND);
 
-  const loadMoreButtonNode = filmsListNode.querySelector('.films-list__show-more');
-  loadMoreButtonNode.addEventListener('click', (evt) => {
-    evt.preventDefault();
-    cardsCreate
-      .slice(showMoreFilms, showMoreFilms + QUANTITY_CREATE_CARDS_STEP)
-      .forEach((films) =>  renderCardFilm(filmsListWrapperNode, films));
+    const loadMoreButtonNode = filmsListNode.querySelector('.films-list__show-more');
+    loadMoreButtonNode.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      cardsCreate
+        .slice(showMoreFilms, showMoreFilms + QUANTITY_CREATE_CARDS_STEP)
+        .forEach((films) =>  renderCardFilm(filmsListWrapperNode, films));
 
-    showMoreFilms += QUANTITY_CREATE_CARDS_STEP;
+      showMoreFilms += QUANTITY_CREATE_CARDS_STEP;
 
-    if (filmsListWrapperNode.children.length >= cardsCreate.length) {
-      loadMoreButtonNode.remove();
-    }
-  });
-}
+      if (filmsListWrapperNode.children.length >= cardsCreate.length) {
+        loadMoreButtonNode.remove();
+      }
+    });
+  }
+};
 
 // ОТРИСОВКА БЛОКА ЭКСТРА!
 
-for (let i = 0; i < QUANTITY_CREATE_CARDS_EXTRA; i++) {
-  renderCardFilm(filmsListTopRatedNode, sortFilmsRating[i]);
-}
+const createExtraBlock = () => {
+  render(filmsNode, new ListFilmsTopView().element, RenderPosition.BEFOREEND);
+  render(filmsNode, new ListFilmsCommentView().element, RenderPosition.BEFOREEND);
+  const filmsListTopRatedWrapperNode = filmsNode.querySelector('.films-list--extra:nth-child(2)');
+  const filmsListMostCommentedWrapperNode = filmsNode.querySelector('.films-list--extra:nth-child(3)');
+  const filmsListTopRatedNode = filmsListTopRatedWrapperNode.querySelector('.films-list__container');
+  const filmsListMostCommentedNode = filmsListMostCommentedWrapperNode.querySelector('.films-list__container');
 
-for (let i = 0; i < QUANTITY_CREATE_CARDS_EXTRA; i++) {
-  renderCardFilm(filmsListMostCommentedNode, sortFilmsComments[i]);
-}
+  for (let i = 0; i < QUANTITY_CREATE_CARDS_EXTRA; i++) {
+    renderCardFilm(filmsListTopRatedNode, sortFilmsRating[i]);
+  }
+
+  for (let i = 0; i < QUANTITY_CREATE_CARDS_EXTRA; i++) {
+    renderCardFilm(filmsListMostCommentedNode, sortFilmsComments[i]);
+  }
+};
+
+// ГЕНЕРАЦИЯ СТАРТОВОЙ СТРАНИЦЫ!
+
+const createPageStart = () => {
+  if (cardsCreate.length === 0) {
+    createEmptyList();
+  } else {
+    createSortList();
+    createFilmsTitle();
+    createMainBlockFilms();
+    createExtraBlock();
+    createUserRatingView();
+  }
+};
+
+createPageStart();
 
 export {cardsCreate};
 

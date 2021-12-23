@@ -1,14 +1,10 @@
 import {createElement} from '../renderTemplate.js';
 
-const createListFilmsTemplate = () => (
-  `<section class="films">
-    <section class="films-list">
-
-    </section>
-  </section>`
+const createFilmsListEmptyTemplate = () => (
+  '<h2 class="films-list__title">There are no movies in our database</h2>'
 );
 
-class ListFilmsView {
+class ListFilmsEmptyView {
   #element = null;
 
   get element() {
@@ -20,7 +16,7 @@ class ListFilmsView {
   }
 
   get template() {
-    return createListFilmsTemplate();
+    return createFilmsListEmptyTemplate();
   }
 
   removeElement() {
@@ -28,4 +24,4 @@ class ListFilmsView {
   }
 }
 
-export default ListFilmsView;
+export default ListFilmsEmptyView;
