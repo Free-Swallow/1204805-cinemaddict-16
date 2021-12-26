@@ -1,4 +1,4 @@
-import {createElement} from '../renderTemplate.js';
+import AbstractView from './abstract-view.js';
 
 const createCardTemplate = (data) => {
   const {
@@ -33,28 +33,26 @@ const createCardTemplate = (data) => {
         </article>`;
 };
 
-class CardView {
-  #element = null;
+class CardView extends AbstractView {
   #data = null;
 
   constructor(data) {
+    super();
     this.#data = data;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createCardTemplate(this.#data);
   }
 
-  removeElement() {
-    this.#element = null;
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#clickHandler);
+  }
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
   }
 }
 

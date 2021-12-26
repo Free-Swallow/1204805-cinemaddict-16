@@ -1,4 +1,4 @@
-import {createElement} from '../renderTemplate.js';
+import AbstractView from './abstract-view.js';
 
 const createFilterTemplate = () => (
   `<nav class="main-navigation">
@@ -6,23 +6,9 @@ const createFilterTemplate = () => (
    </nav>`
 );
 
-class MainMenuView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+class MainMenuView extends AbstractView {
   get template() {
     return createFilterTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 
