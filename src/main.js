@@ -1,4 +1,3 @@
-import {RenderPosition, render} from './renderTemplate.js';
 import MainMenuView from './view/main-menu-view.js';
 import SortListView from './view/sort-list-view.js';
 import MainNavView from './view/main-nav-view.js';
@@ -8,15 +7,16 @@ import PopupFilmView from './view/popup-film-view.js';
 import QuantityFilmsView from './view/quanity-films-view.js';
 import CardView from './view/card-view.js';
 import ButtonShowMoreView from './view/button-show-more-view.js';
-import {renderData} from './mock/fish.js';
-import {getNumberFilter} from './mock/filter.js';
 import ListFilmsContainerView from './view/list-films-container-view.js';
 import CommentView from './view/comment-view.js';
 import ListFilmsTopView from './view/list-films-top-view.js';
 import ListFilmsCommentView from './view/list-films-comment-view.js';
 import ListFilmsTitleView from './view/list-films-title-view.js';
 import ListFilmsEmptyView from './view/list-films-empty-view.js';
-import {bySort} from './utils.js';
+import {RenderPosition, render, remove} from './utils/renderTemplate.js';
+import {renderData} from './mock/fish.js';
+import {getNumberFilter} from './mock/filter.js';
+import {bySort} from './utils/utils.js';
 
 const QUANTITY_CREATE_CARDS_START = 5;
 const QUANTITY_CREATE_CARDS_STEP = 5;
@@ -50,12 +50,11 @@ const sortFilmsRating =  cardsCreate.slice(0, cardsCreate.length).sort(bySort('r
 
 const renderPopup = (card) => {
   const popupComponent = new PopupFilmView(card);
-  const popupClose = popupComponent.element.querySelector('.film-details__close-btn');
-  const commentComponent = new CommentView(card);
+
   bodyNode.classList.add('hide-overflow');
 
   function onRemovePopup() {
-    popupComponent.element.remove();
+    remove(popupComponent);
     bodyNode.classList.remove('hide-overflow');
     document.removeEventListener('keydown', onCloseKey);
   }
@@ -67,34 +66,42 @@ const renderPopup = (card) => {
     }
   }
 
-  render(bodyNode, popupComponent.element, RenderPosition.BEFOREEND);
+  render(bodyNode, popupComponent, RenderPosition.BEFOREEND);
 
   document.addEventListener('keydown', onCloseKey);
-  popupClose.addEventListener('click', onRemovePopup);
+  popupComponent.setOpenPopupHandler(() => {
+    onRemovePopup();
+  });
 
   const popupListCommentNode = bodyNode.querySelector('.film-details__comments-list');
 
-  render(popupListCommentNode, commentComponent.element, RenderPosition.BEFOREEND);
+  const renderComment = (list) => {
+    for (const item of list) {
+      const commentComponent = new CommentView(item);
+      render(popupListCommentNode, commentComponent, RenderPosition.BEFOREEND);
+    }
+  };
+  renderComment(card.comments);
+
 };
 
 // СОЗДАНИЕ КАРТОЧКИ ФИЛЬМА!
 
 const renderCardFilm = (cardContainer, card) => {
   const cardComponent = new CardView(card);
-  const cardLink = cardComponent.element.querySelector('.film-card__link');
 
-  cardLink.addEventListener('click', () => {
+  cardComponent.setClickHandler(() => {
     renderPopup(card);
   });
 
-  render(cardContainer, cardComponent.element, RenderPosition.BEFOREEND);
+  render(cardContainer, cardComponent, RenderPosition.BEFOREEND);
 };
 
 // ДОБАВЛЕНИЕ ВНУТРЕННИХ БЛОКОВ И ОБЪЯВЛЕНИЕ УЗЛОВ!
 
-render(mainNode, new MainMenuView().element, RenderPosition.AFTERBEGIN);
-render(mainNode, new ListFilmsView().element, RenderPosition.BEFOREEND);
-render(footerStatisticsNode, new QuantityFilmsView(cardsCreate).element, RenderPosition.BEFOREEND);
+render(mainNode, new MainMenuView(), RenderPosition.AFTERBEGIN);
+render(mainNode, new ListFilmsView(), RenderPosition.BEFOREEND);
+render(footerStatisticsNode, new QuantityFilmsView(cardsCreate), RenderPosition.BEFOREEND);
 
 const mainMenuNode = mainNode.querySelector('.main-navigation');
 const filmsNode = bodyNode.querySelector('.films');
@@ -103,30 +110,30 @@ const filmsListNode = filmsNode.querySelector('.films-list');
 // СОЗДАНИЕ БЛОКА РЕЙТИНГ ЮЗЕРА!
 
 const createUserRatingView = () => {
-  render(headerNode, new UserRatingView().element, RenderPosition.BEFOREEND);
+  render(headerNode, new UserRatingView(), RenderPosition.BEFOREEND);
 };
 
 // ОТРИСОВКА ГЛАВНОГО МЕНЮ!
 
-render(mainMenuNode, new MainNavView(getFilterArray).element, RenderPosition.AFTERBEGIN);
+render(mainMenuNode, new MainNavView(getFilterArray), RenderPosition.AFTERBEGIN);
 const createSortList = () => {
-  render(mainMenuNode, new SortListView().element, RenderPosition.AFTEREND);
+  render(mainMenuNode, new SortListView(), RenderPosition.AFTEREND);
 };
 
 // СОЗДАНИЕ ЗАГОЛОВКА СТРАНИЦЫ!
 
 const createEmptyList = () => {
-  render(filmsListNode, new ListFilmsEmptyView().element, RenderPosition.BEFOREEND);
+  render(filmsListNode, new ListFilmsEmptyView(), RenderPosition.BEFOREEND);
 };
 
 const createFilmsTitle = () => {
-  render(filmsListNode, new ListFilmsTitleView().element, RenderPosition.BEFOREEND);
+  render(filmsListNode, new ListFilmsTitleView(), RenderPosition.BEFOREEND);
 };
 
 // ОТРИСОВКА КАРТОЧЕК ФИЛЬМОВ!
 
 const createMainBlockFilms = () => {
-  render(filmsListNode, new ListFilmsContainerView().element, RenderPosition.BEFOREEND);
+  render(filmsListNode, new ListFilmsContainerView(), RenderPosition.BEFOREEND);
   const filmsListWrapperNode = filmsListNode.querySelector('.films-list__container');
   for (let i = 0; i < Math.min(cardsCreate.length, QUANTITY_CREATE_CARDS_START); i++) {
     renderCardFilm(filmsListWrapperNode, cardsCreate[i]);
@@ -134,13 +141,13 @@ const createMainBlockFilms = () => {
 
   // ОТРИСОВКА КНОПКИ "ПОКАЗАТЬ БОЛЬШЕ"!
 
+  const buttonShowMoreComponent = new ButtonShowMoreView();
+
   if (filmsListWrapperNode.children.length < cardsCreate.length) {
     let showMoreFilms = QUANTITY_CREATE_CARDS_STEP;
-    render(filmsListNode, new ButtonShowMoreView().element, RenderPosition.BEFOREEND);
+    render(filmsListNode, buttonShowMoreComponent, RenderPosition.BEFOREEND);
 
-    const loadMoreButtonNode = filmsListNode.querySelector('.films-list__show-more');
-    loadMoreButtonNode.addEventListener('click', (evt) => {
-      evt.preventDefault();
+    buttonShowMoreComponent.setDownloadMoreHandler(() => {
       cardsCreate
         .slice(showMoreFilms, showMoreFilms + QUANTITY_CREATE_CARDS_STEP)
         .forEach((films) =>  renderCardFilm(filmsListWrapperNode, films));
@@ -148,7 +155,7 @@ const createMainBlockFilms = () => {
       showMoreFilms += QUANTITY_CREATE_CARDS_STEP;
 
       if (filmsListWrapperNode.children.length >= cardsCreate.length) {
-        loadMoreButtonNode.remove();
+        buttonShowMoreComponent.removeElement();
       }
     });
   }
@@ -157,8 +164,8 @@ const createMainBlockFilms = () => {
 // ОТРИСОВКА БЛОКА ЭКСТРА!
 
 const createExtraBlock = () => {
-  render(filmsNode, new ListFilmsTopView().element, RenderPosition.BEFOREEND);
-  render(filmsNode, new ListFilmsCommentView().element, RenderPosition.BEFOREEND);
+  render(filmsNode, new ListFilmsTopView(), RenderPosition.BEFOREEND);
+  render(filmsNode, new ListFilmsCommentView(), RenderPosition.BEFOREEND);
   const filmsListTopRatedWrapperNode = filmsNode.querySelector('.films-list--extra:nth-child(2)');
   const filmsListMostCommentedWrapperNode = filmsNode.querySelector('.films-list--extra:nth-child(3)');
   const filmsListTopRatedNode = filmsListTopRatedWrapperNode.querySelector('.films-list__container');

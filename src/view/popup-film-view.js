@@ -1,4 +1,4 @@
-import {createElement} from '../renderTemplate.js';
+import AbstractView from './abstract-view.js';
 
 const createPopupFilmTemplate = (data) => {
   const {
@@ -146,28 +146,26 @@ const createPopupFilmTemplate = (data) => {
 </section>`;
 };
 
-class PopupFilmView {
-  #element = null;
+class PopupFilmView extends AbstractView {
   #data = null;
 
   constructor(data) {
+    super();
     this.#data = data;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createPopupFilmTemplate(this.#data);
   }
 
-  removeElement() {
-    this.#element = null;
+  setOpenPopupHandler = (callback) => {
+    this._callback.openPopup = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#openClickHandler);
+  }
+
+  #openClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.openPopup();
   }
 }
 

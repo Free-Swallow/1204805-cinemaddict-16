@@ -1,4 +1,4 @@
-import {createElement} from '../renderTemplate.js';
+import AbstractView from './abstract-view.js';
 
 const createCommentListTemplate = () => (
   `<section class="films-list films-list--extra">
@@ -9,23 +9,9 @@ const createCommentListTemplate = () => (
     </section>`
 );
 
-class ListFilmsCommentView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+class ListFilmsCommentView extends AbstractView {
   get template() {
     return createCommentListTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

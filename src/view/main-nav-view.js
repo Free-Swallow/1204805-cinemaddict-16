@@ -1,4 +1,4 @@
-import {createElement} from '../renderTemplate.js';
+import AbstractView from './abstract-view.js';
 
 const createFilterItem = (film, isChecked) => {
   const {name, number} = film;
@@ -19,28 +19,16 @@ const createMainNavTemplate = (data) => {
      </div>`;
 };
 
-class MainNavView {
-  #element = null;
+class MainNavView extends AbstractView {
   #filters = null;
 
   constructor(filters) {
+    super();
     this.#filters = filters;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createMainNavTemplate(this.#filters);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 
