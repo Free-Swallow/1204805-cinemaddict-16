@@ -163,9 +163,39 @@ class PopupFilmView extends AbstractView {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#openClickHandler);
   }
 
+  setPopupWatchlistHandler = (callback) => {
+    this._callback.watchlistClick = callback;
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#popupWatchClickHandler);
+  }
+
+  setPopupWatchedHandler = (callback) => {
+    this._callback.watchedClick = callback;
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#popupWatchedClickHandler);
+  }
+
+  setPopupFavoriteHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#popupFavoriteClickHandler);
+  }
+
   #openClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.openPopup();
+  }
+
+  #popupWatchClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.watchlistClick();
+  }
+
+  #popupWatchedClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.watchedClick();
+  }
+
+  #popupFavoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 }
 

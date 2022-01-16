@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 import {getRandomNumber, getRandomFractionalNumber, getRandomNumberValues} from '../utils/utils.js';
 
 const minRating = 0;
@@ -222,6 +223,7 @@ const renderData = () => (
     isFavorite: Boolean(getRandomNumber(0, 1)),
     isWatched: Boolean(getRandomNumber(0, 1)),
     isBookmark: Boolean(getRandomNumber(0, 1)),
+    id: nanoid(),
   }
 );
 

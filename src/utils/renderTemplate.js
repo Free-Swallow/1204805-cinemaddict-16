@@ -34,22 +34,22 @@ const createElement = (template) => {
   return newElement.firstChild; // 3
 };
 
-// const replace = (newElement, oldElement) => {
-//   if (newElement === null || oldElement === null) {
-//     throw new Error('Can\'t replace unexisting elements');
-//   }
-//
-//   const newChild = newElement instanceof AbstractView ? newElement.element : newElement;
-//   const oldChild = oldElement instanceof AbstractView ? oldElement.element : oldElement;
-//
-//   const parent = oldChild.parentElement;
-//
-//   if (parent === null) {
-//     throw new Error('Parent element doesn\'t exist');
-//   }
-//
-//   parent.replaceChild(newChild, oldChild);
-// };
+const replace = (newElement, oldElement) => {
+  if (newElement === null || oldElement === null) {
+    throw new Error('Can\'t replace unexisting elements');
+  }
+
+  const newChild = newElement instanceof AbstractView ? newElement.element : newElement;
+  const oldChild = oldElement instanceof AbstractView ? oldElement.element : oldElement;
+
+  const parent = oldChild.parentElement;
+
+  if (parent === null) {
+    throw new Error('Parent element doesn\'t exist');
+  }
+
+  parent.replaceChild(newChild, oldChild);
+};
 
 const remove = (component) => {
   if (component === null) {
@@ -64,4 +64,4 @@ const remove = (component) => {
   component.removeElement();
 };
 
-export {RenderPosition, createElement, render, remove};
+export {RenderPosition, createElement, render, remove, replace};
