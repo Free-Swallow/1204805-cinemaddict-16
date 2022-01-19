@@ -13,6 +13,7 @@ import MoviePresenter from './movie-presenter.js';
 import {RenderPosition, render, remove} from '../utils/renderTemplate.js';
 import {getNumberFilter} from '../mock/filter.js';
 import {bySort, updateItem} from '../utils/utils.js';
+import {SortType} from '../view/sort-list-view.js';
 
 const QUANTITY_CREATE_CARDS_START = 5;
 const QUANTITY_CREATE_CARDS_STEP = 5;
@@ -35,6 +36,8 @@ class BoardPresenter {
   #listFilmsComment = new ListFilmsCommentView();
   #movieKeys = new Map();
   #showMoreFilms = QUANTITY_CREATE_CARDS_STEP;
+  #currentTypeSort = SortType.DEFAULT;
+  #sourcedBoardFilms = [];
 
   #boardFilms = [];
 
@@ -44,6 +47,7 @@ class BoardPresenter {
 
   init = (boardFilms) => {
     this.#boardFilms = [...boardFilms];
+    this.#sourcedBoardFilms = [...boardFilms];
 
     this.headerNode = this.#boardContainer.querySelector('.header');
     this.mainNode = this.#boardContainer.querySelector('.main');
@@ -61,7 +65,34 @@ class BoardPresenter {
 
   #handlerMovieChange = (updateMovie) => {
     this.#boardFilms = updateItem(this.#boardFilms, updateMovie);
+    this.#sourcedBoardFilms = updateItem(this.#sourcedBoardFilms, updateMovie);
     this.#movieKeys.get(updateMovie.id).init(updateMovie);
+  }
+
+  #handlerSortTypeChange = (sortType) => {
+    if (this.#currentTypeSort === sortType) {
+      return;
+    }
+
+    this.#sortMovie(sortType);
+    this.#clearMovieList();
+    this.#renderMainBlockFilms();
+    this.#renderExtraBlock();
+  }
+
+  #sortMovie = (sortType) => {
+    switch (sortType) {
+      case SortType.DATE:
+        this.#boardFilms.sort(bySort('releaseYear'));
+        break;
+      case SortType.RATING:
+        this.#boardFilms.sort(bySort('rating'));
+        break;
+      default:
+        this.#boardFilms = [...this.#sourcedBoardFilms];
+    }
+
+    this.#currentTypeSort = sortType;
   }
 
   #renderMainNav = () => {
@@ -85,6 +116,7 @@ class BoardPresenter {
 
   #renderSortList = () => {
     render(this.mainMenuNode, this.#sortListComponent, RenderPosition.AFTEREND);
+    this.#sortListComponent.setSortTypeChangeHandler(this.#handlerSortTypeChange);
   }
 
   #renderEmptyList = () => {
@@ -114,18 +146,21 @@ class BoardPresenter {
     }
   }
 
-  #renderMainBlockFilms = () => {
-    render(this.filmsListNode, this.#listFilmsContainerComponent, RenderPosition.BEFOREEND);
-
+  #renderCardsFilms = () => {
     for (let i = 0; i < Math.min(this.#boardFilms.length, QUANTITY_CREATE_CARDS_START); i++) {
       this.#renderCardFilm(this.#listFilmsContainerComponent, this.#boardFilms[i]);
     }
+  }
 
+  #renderMainBlockFilms = () => {
+    render(this.filmsListNode, this.#listFilmsContainerComponent, RenderPosition.BEFOREEND);
+
+    this.#renderCardsFilms();
     this.#renderButtonShowMore();
   }
 
   #renderTopBlock = () => {
-    const sortFilmsRating =  this.#boardFilms.slice(0, this.#boardFilms.length).sort(bySort('rating'));
+    const sortFilmsRating =   this.#boardFilms.slice(0, QUANTITY_CREATE_CARDS_EXTRA).sort(bySort('rating'));
     render(this.filmsNode, this.#listFilmsTop, RenderPosition.BEFOREEND);
     render(this.#listFilmsTop, this.#topBlockContainer, RenderPosition.BEFOREEND);
 
@@ -135,7 +170,7 @@ class BoardPresenter {
   }
 
   #renderCommentBlock = () => {
-    const sortFilmsComments = this.#boardFilms.slice(0, this.#boardFilms.length).sort(bySort('comments'));
+    const sortFilmsComments = this.#boardFilms.slice(0, QUANTITY_CREATE_CARDS_EXTRA).sort(bySort('comments'));
     render(this.filmsNode, this.#listFilmsComment, RenderPosition.BEFOREEND);
     render(this.#listFilmsComment, this.#commentBlockContainer, RenderPosition.BEFOREEND);
 

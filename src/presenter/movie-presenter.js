@@ -116,8 +116,6 @@ class MoviePresenter {
     this.#changeData({...this.#movie, isFavorite: !this.#movie.isFavorite});
   }
 
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
   #handlerPopupWatchlistClick = () => {
     this.#changeData({...this.#movie, isBookmark: !this.#movie.isBookmark});
     this.#renderPopup(this.#movie, this.#popupComponent);
