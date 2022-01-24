@@ -13,11 +13,8 @@ import MoviePresenter from './movie-presenter.js';
 import {RenderPosition, render, remove} from '../utils/renderTemplate.js';
 import {getNumberFilter} from '../mock/filter.js';
 import {bySort, updateItem} from '../utils/utils.js';
+import {QUANTITY_CREATE_CARDS_STEP, QUANTITY_CREATE_CARDS_START, QUANTITY_CREATE_CARDS_EXTRA} from '../utils/constanta.js';
 import {SortType} from '../view/sort-list-view.js';
-
-const QUANTITY_CREATE_CARDS_START = 5;
-const QUANTITY_CREATE_CARDS_STEP = 5;
-const QUANTITY_CREATE_CARDS_EXTRA = 2;
 
 class BoardPresenter {
   #boardContainer = null;
@@ -146,37 +143,45 @@ class BoardPresenter {
     }
   }
 
-  #renderCardsFilms = () => {
-    for (let i = 0; i < Math.min(this.#boardFilms.length, QUANTITY_CREATE_CARDS_START); i++) {
-      this.#renderCardFilm(this.#listFilmsContainerComponent, this.#boardFilms[i]);
+  #renderCardsFilms = (quantity, container, object) => {
+    for (let i = 0; i < quantity; i++) {
+      this.#renderCardFilm(container, object[i]);
     }
   }
 
   #renderMainBlockFilms = () => {
     render(this.filmsListNode, this.#listFilmsContainerComponent, RenderPosition.BEFOREEND);
 
-    this.#renderCardsFilms();
+    this.#renderCardsFilms(
+      Math.min(this.#boardFilms.length, QUANTITY_CREATE_CARDS_START),
+      this.#listFilmsContainerComponent,
+      this.#boardFilms
+    );
     this.#renderButtonShowMore();
   }
 
   #renderTopBlock = () => {
-    const sortFilmsRating =   this.#boardFilms.slice(0, QUANTITY_CREATE_CARDS_EXTRA).sort(bySort('rating'));
+    const sortFilmsRating =   this.#boardFilms.slice(0, this.#boardFilms.length).sort(bySort('rating'));
     render(this.filmsNode, this.#listFilmsTop, RenderPosition.BEFOREEND);
     render(this.#listFilmsTop, this.#topBlockContainer, RenderPosition.BEFOREEND);
 
-    for (let i = 0; i < QUANTITY_CREATE_CARDS_EXTRA; i++) {
-      this.#renderCardFilm(this.#topBlockContainer, sortFilmsRating[i]);
-    }
+    this.#renderCardsFilms(
+      QUANTITY_CREATE_CARDS_EXTRA,
+      this.#topBlockContainer,
+      sortFilmsRating
+    );
   }
 
   #renderCommentBlock = () => {
-    const sortFilmsComments = this.#boardFilms.slice(0, QUANTITY_CREATE_CARDS_EXTRA).sort(bySort('comments'));
+    const sortFilmsComments = this.#boardFilms.slice(0, this.#boardFilms.length).sort(bySort('comments'));
     render(this.filmsNode, this.#listFilmsComment, RenderPosition.BEFOREEND);
     render(this.#listFilmsComment, this.#commentBlockContainer, RenderPosition.BEFOREEND);
 
-    for (let i = 0; i < QUANTITY_CREATE_CARDS_EXTRA; i++) {
-      this.#renderCardFilm(this.#commentBlockContainer, sortFilmsComments[i]);
-    }
+    this.#renderCardsFilms(
+      QUANTITY_CREATE_CARDS_EXTRA,
+      this.#commentBlockContainer,
+      sortFilmsComments
+    );
   }
 
   #renderExtraBlock = () => {

@@ -79,6 +79,13 @@ const listEmojis = [
   },
 ];
 
+const emoji = [
+  'smile',
+  'sleeping',
+  'puke',
+  'angry',
+];
+
 const listNames = [
   'John Doe',
   'Tim Macoveev',
@@ -179,6 +186,7 @@ const renderComments = () =>(
     comment: listComments[getRandomNumber(0, listComments.length - 1)],
     date: getCommentDate(),
     author: listNames[getRandomNumber(0, listNames.length - 1)],
+    conditionEmoji: emoji[getRandomNumber(0, emoji.length - 1)],
   }
 );
 

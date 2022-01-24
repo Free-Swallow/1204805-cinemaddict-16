@@ -2,11 +2,11 @@ import AbstractView from './abstract-view.js';
 
 const createCommentTemplate = (data) => {
 
-  const {comment, date, author, emotion} = data;
+  const {comment, date, author, conditionEmoji} = data;
 
   return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
-      <img src="${emotion.url}" width="55" height="55" alt="${emotion.alt}">
+      <img src="./images/emoji/${conditionEmoji}.png" width="55" height="55" alt="emoji-smile">
     </span>
     <div>
       <p class="film-details__comment-text">${comment}</p>
@@ -17,6 +17,7 @@ const createCommentTemplate = (data) => {
       </p>
     </div>
   </li>`;
+
 };
 
 class CommentView extends AbstractView {

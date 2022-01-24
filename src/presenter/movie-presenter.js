@@ -1,12 +1,7 @@
 import CardView from '../view/card-view.js';
 import PopupFilmView from '../view/popup-film-view.js';
-import CommentView from '../view/comment-view.js';
 import {remove, render, RenderPosition, replace} from '../utils/renderTemplate.js';
-
-const KeysClose = {
-  ESC: 'Esc',
-  ESCAPE: 'Escape',
-};
+import {KeysClose, POPUP_SCROLL} from '../utils/constanta.js';
 
 class MoviePresenter {
   #movieListContainer = null;
@@ -15,10 +10,29 @@ class MoviePresenter {
   #movie = null;
   #boardContainer = document.querySelector('body');
   #changeData = null;
+  #currentScroll = POPUP_SCROLL;
 
   constructor(movieListContainer, changeData) {
     this.#movieListContainer = movieListContainer;
     this.#changeData = changeData;
+  }
+
+  #getCurrentScrollPopup = () => {
+    const popupCloseScroll = document.querySelector('.film-details');
+    const valueScroll = () => {
+      this.#currentScroll = popupCloseScroll.scrollTop;
+    };
+    popupCloseScroll.addEventListener('scroll', valueScroll);
+  }
+
+  #setCurrentScrollPopup = () => {
+    const popup = document.querySelector('.film-details');
+    popup.scrollTo(0, this.#currentScroll);
+  }
+
+  #scrollBundle = () => {
+    this.#getCurrentScrollPopup();
+    this.#setCurrentScrollPopup();
   }
 
   init = (dataMovie) => {
@@ -41,6 +55,7 @@ class MoviePresenter {
     this.#movieComponent.setClickHandler(() => {
       this.#closeOtherPopup();
       this.#renderPopup(this.#movie, this.#popupComponent);
+      this.#scrollBundle();
     });
 
     if (prevMovieComponent === null || prevPopupComponent === null) {
@@ -60,20 +75,12 @@ class MoviePresenter {
     remove(prevPopupComponent);
   }
 
-  #renderComment = (list) => {
-    const popupListCommentNode = this.#boardContainer.querySelector('.film-details__comments-list');
-
-    for (const item of list) {
-      const commentComponent = new CommentView(item);
-      render(popupListCommentNode, commentComponent, RenderPosition.BEFOREEND);
-    }
-  };
-
   #renderPopup = (card, popup) => {
     this.#boardContainer.classList.add('hide-overflow');
 
     const onRemovePopup = () => {
       remove(popup);
+      this.#currentScroll = POPUP_SCROLL;
       this.#boardContainer.classList.remove('hide-overflow');
       document.removeEventListener('keydown', onCloseKey);
     };
@@ -91,8 +98,6 @@ class MoviePresenter {
     popup.setOpenPopupHandler(() => {
       onRemovePopup();
     });
-
-    this.#renderComment(card.comments);
   }
 
   #closeOtherPopup = () => {
@@ -119,16 +124,19 @@ class MoviePresenter {
   #handlerPopupWatchlistClick = () => {
     this.#changeData({...this.#movie, isBookmark: !this.#movie.isBookmark});
     this.#renderPopup(this.#movie, this.#popupComponent);
+    this.#scrollBundle();
   }
 
   #handlerPopupWatchedClick = () => {
     this.#changeData({...this.#movie, isWatched: !this.#movie.isWatched});
     this.#renderPopup(this.#movie, this.#popupComponent);
+    this.#scrollBundle();
   }
 
   #handlerPopupFavoriteClick = () => {
     this.#changeData({...this.#movie, isFavorite: !this.#movie.isFavorite});
     this.#renderPopup(this.#movie, this.#popupComponent);
+    this.#scrollBundle();
   }
 }
 

@@ -1,4 +1,6 @@
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
+import CommentView from './comment-view.js';
+import {render, RenderPosition} from '../utils/renderTemplate';
 
 const createPopupFilmTemplate = (data) => {
   const {
@@ -12,12 +14,14 @@ const createPopupFilmTemplate = (data) => {
     country,
     kind,
     ageRating,
+    emotionTarget,
     rating,
     description,
     comments,
     isFavorite,
     isWatched,
     isBookmark,
+    message,
     poster,
   } = data;
 
@@ -30,7 +34,6 @@ const createPopupFilmTemplate = (data) => {
     const current = kind[i];
     const template = `<span class="film-details__genre">${current}</span>`;
     listKind.push(template);
-
   }
 
   return `<section class="film-details">
@@ -112,10 +115,14 @@ const createPopupFilmTemplate = (data) => {
         </ul>
 
         <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">
+            ${emotionTarget ? `<img src="./images/emoji/${emotionTarget}.png" width="55" height="55" alt="emoji-${emotionTarget}">` : ''}
+          </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">
+            ${message ? message : ''}
+</textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -146,16 +153,36 @@ const createPopupFilmTemplate = (data) => {
 </section>`;
 };
 
-class PopupFilmView extends AbstractView {
-  #data = null;
+class PopupFilmView extends SmartView {
 
   constructor(data) {
     super();
-    this.#data = data;
+    this._data = PopupFilmView.parseCommentToData(data);
+
+    this.#setInnerHandlers();
+    this.#renderComment(this._data.comments);
   }
 
   get template() {
-    return createPopupFilmTemplate(this.#data);
+    return createPopupFilmTemplate(this._data);
+  }
+
+  #renderComment = (list) => {
+    const popupListCommentNode = this.element.querySelector('.film-details__comments-list');
+
+    for (const item of list) {
+      const commentComponent = new CommentView(item);
+      render(popupListCommentNode, commentComponent, RenderPosition.BEFOREEND);
+    }
+  };
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setOpenPopupHandler(this._callback.openPopup);
+    this.setPopupWatchlistHandler( this._callback.watchlistClick);
+    this.setPopupWatchedHandler(this._callback.watchedClick);
+    this.setPopupFavoriteHandler(this._callback.favoriteClick);
+    this.#renderComment(this._data.comments);
   }
 
   setOpenPopupHandler = (callback) => {
@@ -178,6 +205,13 @@ class PopupFilmView extends AbstractView {
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#popupFavoriteClickHandler);
   }
 
+  #setInnerHandlers = () => {
+    this.element.querySelector('.film-details__emoji-list')
+      .addEventListener('change', this.#changeEmojiHandler);
+    this.element.querySelector('.film-details__comment-input')
+      .addEventListener('input', this.#descriptionInputHandler);
+  }
+
   #openClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.openPopup();
@@ -197,6 +231,38 @@ class PopupFilmView extends AbstractView {
     evt.preventDefault();
     this._callback.favoriteClick();
   }
+
+  #changeEmojiHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      emotionTarget: evt.target.value,
+    }, false);
+  }
+
+  #descriptionInputHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      message: evt.target.value,
+    }, true);
+  }
+
+  static parseCommentToData = (data) => ({
+    ...data,
+    emotionTarget: false,
+    message: '',
+  });
+
+  // static parseDataToComment = (data) => {
+  //   const comment = { ...data };
+  //
+  //   if (!comment) {
+  //     comment.conditionEmoji = null;
+  //   }
+  //
+  //   delete comment.conditionEmoji;
+  //
+  //   return comment;
+  // }
 }
 
 export default PopupFilmView;
