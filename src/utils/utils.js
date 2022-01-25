@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const bySort = (field) => (b, a) => a[field] > b[field] ? 1 : -1;
 
 const getRandomNumber = (min, max) =>
@@ -36,4 +38,17 @@ const updateItem = (items, update) => {
   ];
 };
 
-export {bySort, getRandomNumber, getRandomFractionalNumber, getRandomNumberValues, updateItem};
+function getTimeFromMins(mins) {
+  const time = [];
+  const hours = Math.trunc(mins/60);
+  const minutes = mins % 60;
+  time.push(hours, minutes);
+
+  if (time[0] === 0) {
+    return dayjs.duration({minutes: time[1]}).format('m[m]');
+  }
+
+  return dayjs.duration({hours: time[0], minutes: time[1]}).format('H[h] m[m]');
+}
+
+export {bySort, getRandomNumber, getRandomFractionalNumber, getRandomNumberValues, updateItem, getTimeFromMins};

@@ -6,11 +6,24 @@ const KeysClose = {
   ESC: 'Esc',
   ESCAPE: 'Escape',
 };
+const SortType = {
+  DEFAULT: 'default',
+  DATE: 'releaseYear',
+  RATING: 'rating',
+};
+const RenderPosition = {
+  BEFOREBEGIN: 'beforebegin',
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+  AFTEREND: 'afterend',
+};
 
 export {
   QUANTITY_CREATE_CARDS_START,
   QUANTITY_CREATE_CARDS_STEP,
   QUANTITY_CREATE_CARDS_EXTRA,
   KeysClose,
-  POPUP_SCROLL
+  POPUP_SCROLL,
+  SortType,
+  RenderPosition
 };

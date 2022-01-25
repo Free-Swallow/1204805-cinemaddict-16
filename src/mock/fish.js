@@ -177,7 +177,7 @@ const arrActors = () => {
 
 const getCommentDate = () => {
   const daysGap = getRandomNumber(-100, -1);
-  return dayjs().add(daysGap, 'day').format('DD/MM/YYYY');
+  return dayjs().add(daysGap, 'day').format('YYYY-MM-DD');
 };
 
 const renderComments = () =>(
@@ -192,22 +192,22 @@ const renderComments = () =>(
 
 const getCommentsArr = () => Array.from({length: getRandomNumber(minComments, maxComments)}, renderComments);
 
-const getRuntime = () => {
-  const isHour = getRandomNumber(0, 2);
-  const runtime = [];
-
-  if (isHour) {
-    runtime.push(`${isHour}h`);
-  }
-  const isMinutes = getRandomNumber(0, 59);
-  runtime.push(`${isMinutes}m`);
-
-  return runtime.join(' ');
-};
+// const getRuntime = () => {
+//   const isHour = getRandomNumber(0, 2);
+//   const runtime = [];
+//
+//   if (isHour) {
+//     runtime.push(`${isHour}h`);
+//   }
+//   const isMinutes = getRandomNumber(0, 59);
+//   runtime.push(`${isMinutes}m`);
+//
+//   return runtime.join(' ');
+// };
 
 const getReleaseDay = () => {
   const period = getRandomNumber(-100, -3);
-  return dayjs().add(period, 'day').format('D MMMM');
+  return period;
 };
 
 const getKinds = () => getRandomNumberValues(listKinds, 3);
@@ -227,7 +227,7 @@ const renderData = () => (
     releaseMonthDay: getReleaseDay(),
     kind: getKinds(),
     country: listCountry[getRandomNumber(0, listCountry.length - 1)],
-    runtime: getRuntime(),
+    runtime: getRandomNumber(10, 200),
     isFavorite: Boolean(getRandomNumber(0, 1)),
     isWatched: Boolean(getRandomNumber(0, 1)),
     isBookmark: Boolean(getRandomNumber(0, 1)),
