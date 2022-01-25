@@ -1,4 +1,5 @@
 import AbstractView from './abstract-view.js';
+import {getTimeFromMins} from '../utils/utils.js';
 
 const createCardTemplate = (data) => {
   const {
@@ -14,6 +15,7 @@ const createCardTemplate = (data) => {
     isWatched,
     isBookmark,
   } = data;
+  const convertTime = getTimeFromMins(runtime);
 
   const setButtonStatus = (type) => type !== false ? 'film-card__controls-item--active'
     : '';
@@ -24,7 +26,7 @@ const createCardTemplate = (data) => {
             <p class="film-card__rating">${rating}</p>
             <p class="film-card__info">
               <span class="film-card__year">${releaseYear}</span>
-              <span class="film-card__duration">${runtime}</span>
+              <span class="film-card__duration">${convertTime}</span>
               <span class="film-card__genre">${kind.join(', ')}</span>
             </p>
             <img src=${poster} alt="" class="film-card__poster">

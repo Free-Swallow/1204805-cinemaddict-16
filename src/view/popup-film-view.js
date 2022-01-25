@@ -1,6 +1,11 @@
 import SmartView from './smart-view.js';
 import CommentView from './comment-view.js';
-import {render, RenderPosition} from '../utils/renderTemplate';
+import {render, RenderPosition} from '../utils/renderTemplate.js';
+import {getTimeFromMins} from '../utils/utils.js';
+import dayjs from 'dayjs';
+
+const duration = require('dayjs/plugin/duration');
+dayjs.extend(duration);
 
 const createPopupFilmTemplate = (data) => {
   const {
@@ -24,11 +29,11 @@ const createPopupFilmTemplate = (data) => {
     message,
     poster,
   } = data;
+  const convertTime = getTimeFromMins(runtime);
+  const listKind = [];
 
   const setButtonStatus = (type) => type !== false ? 'film-details__control-button--active'
     : '';
-
-  const listKind = [];
 
   for (let i = 0; i < kind.length; i++) {
     const current = kind[i];
@@ -76,11 +81,11 @@ const createPopupFilmTemplate = (data) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${releaseMonthDay} ${releaseYear}</td>
+              <td class="film-details__cell">${dayjs().add(releaseMonthDay, 'day').format('D MMMM')} ${dayjs(releaseYear).format('YYYY')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${runtime}</td>
+                <td class="film-details__cell">${convertTime}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
