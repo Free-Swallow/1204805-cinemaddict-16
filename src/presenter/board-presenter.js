@@ -12,40 +12,55 @@ import ListFilmsEmptyView from '../view/list-films-empty-view.js';
 import MoviePresenter from './movie-presenter.js';
 import {RenderPosition, render, remove} from '../utils/renderTemplate.js';
 import {getNumberFilter} from '../mock/filter.js';
-import {bySort, updateItem} from '../utils/utils.js';
-import {QUANTITY_CREATE_CARDS_STEP, QUANTITY_CREATE_CARDS_START, QUANTITY_CREATE_CARDS_EXTRA} from '../utils/constanta.js';
+import {bySort} from '../utils/utils.js';
+import {
+  QUANTITY_CREATE_CARDS_STEP,
+  QUANTITY_CREATE_CARDS_START,
+  QUANTITY_CREATE_CARDS_EXTRA,
+  UpdateType,
+  UserAction
+} from '../utils/constanta.js';
 import {SortType} from '../view/sort-list-view.js';
 
 class BoardPresenter {
   #boardContainer = null;
+  #moviesModel = null;
 
   #mainMenuComponent = new MainMenuView();
   #listFilmsComponent = new ListFilmsView();
-  #sortListComponent = new SortListView();
-  #emptyListComponent = new ListFilmsEmptyView();
+  #sortListComponent = null;
+  #emptyListComponent = null;
   #listFilmsTitle = new ListFilmsTitleView();
   #listFilmsContainerComponent = new ListFilmsContainerView();
   #topBlockContainer = new ListFilmsContainerView();
   #commentBlockContainer = new ListFilmsContainerView();
   #userRatingComponent = new UserRatingView();
-  #buttonShowMoreComponent = new ButtonShowMoreView();
+  #buttonShowMoreComponent = null;
   #listFilmsTop = new ListFilmsTopView();
   #listFilmsComment = new ListFilmsCommentView();
   #movieKeys = new Map();
   #showMoreFilms = QUANTITY_CREATE_CARDS_STEP;
   #currentTypeSort = SortType.DEFAULT;
-  #sourcedBoardFilms = [];
 
-  #boardFilms = [];
-
-  constructor(boardContainer) {
+  constructor(boardContainer, moviesModel) {
     this.#boardContainer = boardContainer;
+    this.#moviesModel = moviesModel;
+
+    this.#moviesModel.addObservable(this.#handleModelEvent);
   }
 
-  init = (boardFilms) => {
-    this.#boardFilms = [...boardFilms];
-    this.#sourcedBoardFilms = [...boardFilms];
+  // Обёртка для получения списка фильмов модели
+  get movies() {
+    switch (this.#currentTypeSort) {
+      case SortType.DATE:
+        return [...this.#moviesModel.movies].sort(bySort('releaseYear'));
+      case SortType.RATING:
+        return [...this.#moviesModel.movies].sort(bySort('rating'));
+    }
+    return this.#moviesModel.movies;
+  }
 
+  init = () => {
     this.headerNode = this.#boardContainer.querySelector('.header');
     this.mainNode = this.#boardContainer.querySelector('.main');
 
@@ -61,9 +76,41 @@ class BoardPresenter {
   }
 
   #handlerMovieChange = (updateMovie) => {
-    this.#boardFilms = updateItem(this.#boardFilms, updateMovie);
-    this.#sourcedBoardFilms = updateItem(this.#sourcedBoardFilms, updateMovie);
+    // Здесь будем вызывать обновление модели
     this.#movieKeys.get(updateMovie.id).init(updateMovie);
+  }
+
+  #handleViewChange = (actionType, updateType, update) => {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
+    switch (actionType) {
+      case UserAction.UPDATE_MOVIE:
+        this.#moviesModel.updateMovie(updateType, update);
+        break;
+    }
+  }
+
+  #handleModelEvent = (updateType, data) => {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
+    switch (UpdateType) {
+      case UpdateType.PATCH:
+        // - обновить часть списка (например, когда удалили комментарий)
+        this.#movieKeys.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        // - обновить список (например, когда фильм добавили в избранное)
+        break;
+      case UpdateType.MAJOR:
+        // - обновить всю доску (например, при переключении фильтра)
+        break;
+    }
   }
 
   #handlerSortTypeChange = (sortType) => {
@@ -71,39 +118,25 @@ class BoardPresenter {
       return;
     }
 
-    this.#sortMovie(sortType);
+    this.#currentTypeSort = sortType;
     this.#clearMovieList();
     this.#renderMainBlockFilms();
-    this.#renderExtraBlock();
-  }
-
-  #sortMovie = (sortType) => {
-    switch (sortType) {
-      case SortType.DATE:
-        this.#boardFilms.sort(bySort('releaseYear'));
-        break;
-      case SortType.RATING:
-        this.#boardFilms.sort(bySort('rating'));
-        break;
-      default:
-        this.#boardFilms = [...this.#sourcedBoardFilms];
-    }
-
-    this.#currentTypeSort = sortType;
+    // this.#renderExtraBlock();
   }
 
   #renderMainNav = () => {
-    const getFilterArray = getNumberFilter(this.#boardFilms);
+    const getFilterArray = getNumberFilter(this.movies);
     const mainNavComponent = new MainNavView(getFilterArray);
     render(this.mainMenuNode, mainNavComponent, RenderPosition.AFTERBEGIN);
   }
 
   #renderCardFilm = (cardContainer, card) => {
-    const moviePresenter = new MoviePresenter(cardContainer, this.#handlerMovieChange);
+    const moviePresenter = new MoviePresenter(cardContainer, this.#handleViewChange);
     moviePresenter.init(card);
     this.#movieKeys.set(card.id, moviePresenter);
   }
 
+  // Очитска списка карточек и удаление кнопки показать больше
   #clearMovieList = () => {
     this.#movieKeys.forEach((presenter) => presenter.destroy());
     this.#movieKeys.clear();
@@ -111,32 +144,65 @@ class BoardPresenter {
     remove(this.#buttonShowMoreComponent);
   }
 
+  // Метод очитски доски
+  #clearBoard = ({resetRenderMovieCount = false, resetSortType = false} = {}) => {
+    const movieCount = this.movies.length;
+
+    this.#moviesModel.forEach((presenter) => presenter.destroy());
+    this.#movieKeys.clear();
+
+    remove(this.#sortListComponent);
+    remove(this.#emptyListComponent);
+    remove(this.#buttonShowMoreComponent);
+
+    if (resetRenderMovieCount) {
+      this.#showMoreFilms = QUANTITY_CREATE_CARDS_STEP;
+    } else {
+      // На случай, если перерисовка доски вызвана
+      // уменьшением количества задач (например, удаление или перенос в архив)
+      // нужно скорректировать число показанных задач
+      this.#showMoreFilms = Math.min(movieCount, this.#showMoreFilms);
+    }
+
+    if (resetSortType) {
+      this.#currentTypeSort = SortType.DEFAULT;
+    }
+  }
+
+  // Отрисовка списка сортировки
   #renderSortList = () => {
+    this.#sortListComponent = new SortListView(this.#currentTypeSort);
     render(this.mainMenuNode, this.#sortListComponent, RenderPosition.AFTEREND);
     this.#sortListComponent.setSortTypeChangeHandler(this.#handlerSortTypeChange);
   }
 
+  // Отрисовка пустого списка
   #renderEmptyList = () => {
+    this.#emptyListComponent = new ListFilmsEmptyView();
     render(this.filmsListNode, this.#emptyListComponent, RenderPosition.BEFOREEND);
   }
 
+  // Отрисовк скрытого поля тайтл
   #renderFilmsTitle = () => {
     render(this.filmsListNode, this.#listFilmsTitle, RenderPosition.BEFOREEND);
   }
 
+  Отрисовка
   #renderButtonShowMore = () => {
+    this.#buttonShowMoreComponent = new ButtonShowMoreView();
+    const movieCount = this.movies.length;
     const filmsListWrapperNode = this.filmsListNode.querySelector('.films-list__container');
-    if (filmsListWrapperNode.children.length < this.#boardFilms.length) {
+    if (filmsListWrapperNode.children.length < movieCount) {
       render(this.filmsListNode, this.#buttonShowMoreComponent, RenderPosition.BEFOREEND);
 
       this.#buttonShowMoreComponent.setDownloadMoreHandler(() => {
-        this.#boardFilms
+        this.movies
           .slice(this.#showMoreFilms, this.#showMoreFilms + QUANTITY_CREATE_CARDS_STEP)
           .forEach((films) =>  this.#renderCardFilm(this.#listFilmsContainerComponent, films));
 
         this.#showMoreFilms += QUANTITY_CREATE_CARDS_STEP;
 
-        if (filmsListWrapperNode.children.length >= this.#boardFilms.length) {
+        if (filmsListWrapperNode.children.length >= movieCount) {
           remove(this.#buttonShowMoreComponent);
         }
       });
@@ -153,32 +219,34 @@ class BoardPresenter {
     render(this.filmsListNode, this.#listFilmsContainerComponent, RenderPosition.BEFOREEND);
 
     this.#renderCardsFilms(
-      Math.min(this.#boardFilms.length, QUANTITY_CREATE_CARDS_START),
+      Math.min(this.movies.length, QUANTITY_CREATE_CARDS_START),
       this.#listFilmsContainerComponent,
-      this.#boardFilms
+      this.movies
     );
     this.#renderButtonShowMore();
   }
 
   #renderTopBlock = () => {
-    const sortFilmsRating =   this.#boardFilms.slice(0, this.#boardFilms.length).sort(bySort('rating'));
+    const movieCount = this.movies.length;
+    const sortFilmsRating =   this.movies.slice(0, movieCount).sort(bySort('rating'));
     render(this.filmsNode, this.#listFilmsTop, RenderPosition.BEFOREEND);
     render(this.#listFilmsTop, this.#topBlockContainer, RenderPosition.BEFOREEND);
 
     this.#renderCardsFilms(
-      QUANTITY_CREATE_CARDS_EXTRA,
+      Math.min(movieCount, QUANTITY_CREATE_CARDS_EXTRA),
       this.#topBlockContainer,
       sortFilmsRating
     );
   }
 
   #renderCommentBlock = () => {
-    const sortFilmsComments = this.#boardFilms.slice(0, this.#boardFilms.length).sort(bySort('comments'));
+    const movieCount = this.movies.length;
+    const sortFilmsComments = this.movies.slice(0, movieCount).sort(bySort('comments'));
     render(this.filmsNode, this.#listFilmsComment, RenderPosition.BEFOREEND);
     render(this.#listFilmsComment, this.#commentBlockContainer, RenderPosition.BEFOREEND);
 
     this.#renderCardsFilms(
-      QUANTITY_CREATE_CARDS_EXTRA,
+      Math.min(movieCount, QUANTITY_CREATE_CARDS_EXTRA),
       this.#commentBlockContainer,
       sortFilmsComments
     );
@@ -194,13 +262,13 @@ class BoardPresenter {
   }
 
   #renderPage = () => {
-    if (this.#boardFilms.length === 0) {
+    if (this.movies.length === 0) {
       this.#renderEmptyList();
     } else {
       this.#renderSortList();
       this.#renderFilmsTitle();
       this.#renderMainBlockFilms();
-      this.#renderExtraBlock();
+      // this.#renderExtraBlock();
       this.#renderUserRating();
     }
   }

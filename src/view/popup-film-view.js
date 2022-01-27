@@ -3,8 +3,8 @@ import CommentView from './comment-view.js';
 import {render, RenderPosition} from '../utils/renderTemplate.js';
 import {getTimeFromMins} from '../utils/utils.js';
 import dayjs from 'dayjs';
-
-const duration = require('dayjs/plugin/duration');
+import duration from 'dayjs/plugin/duration';
+// const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
 
 const createPopupFilmTemplate = (data) => {
@@ -159,13 +159,15 @@ const createPopupFilmTemplate = (data) => {
 };
 
 class PopupFilmView extends SmartView {
+  #comments = null;
 
-  constructor(data) {
+  constructor(data, comments) {
     super();
     this._data = PopupFilmView.parseCommentToData(data);
+    this.#comments = comments;
 
     this.#setInnerHandlers();
-    this.#renderComment(this._data.comments);
+    this.#renderComment(this.#comments.comments);
   }
 
   get template() {

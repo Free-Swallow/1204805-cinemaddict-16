@@ -187,6 +187,7 @@ const renderComments = () =>(
     date: getCommentDate(),
     author: listNames[getRandomNumber(0, listNames.length - 1)],
     conditionEmoji: emoji[getRandomNumber(0, emoji.length - 1)],
+    id: nanoid(),
   }
 );
 
