@@ -1,7 +1,8 @@
 import CardView from '../view/card-view.js';
 import PopupFilmView from '../view/popup-film-view.js';
 import {remove, render, RenderPosition, replace} from '../utils/renderTemplate.js';
-import {KeysClose, POPUP_SCROLL} from '../utils/constanta.js';
+import {KeysClose, POPUP_SCROLL, UpdateType, UserAction} from '../utils/constanta.js';
+import CommentsModel from '../model/comments-model.js';
 
 class MoviePresenter {
   #movieListContainer = null;
@@ -11,6 +12,7 @@ class MoviePresenter {
   #boardContainer = document.querySelector('body');
   #changeData = null;
   #currentScroll = POPUP_SCROLL;
+  #commentModal = null;
 
   constructor(movieListContainer, changeData) {
     this.#movieListContainer = movieListContainer;
@@ -41,8 +43,16 @@ class MoviePresenter {
     const prevMovieComponent = this.#movieComponent;
     const prevPopupComponent = this.#popupComponent;
 
-    this.#popupComponent = new PopupFilmView(this.#movie);
+    // Получение модели списка с комментариями одного фильма
+    this.#commentModal = new CommentsModel();
+    // Отправка списка комментариев в модель
+    this.#commentModal.comments = this.#movie.comments;
+
+    this.#popupComponent = new PopupFilmView(this.#movie, this.#commentModal);
     this.#movieComponent = new CardView(this.#movie);
+
+    // Вызов первого комментария каждой карты
+    // console.log(this.#commentModal.comments[0]);
 
     this.#movieComponent.setWatchlistHandler(this.#handlerWatchlistClick);
     this.#movieComponent.setWatchedHandler(this.#handlerWatchedClick);
@@ -110,31 +120,55 @@ class MoviePresenter {
   }
 
   #handlerWatchlistClick = () => {
-    this.#changeData({...this.#movie, isBookmark: !this.#movie.isBookmark});
+    this.#changeData(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      {...this.#movie, isBookmark: !this.#movie.isBookmark}
+    );
   }
 
   #handlerWatchedClick = () => {
-    this.#changeData({...this.#movie, isWatched: !this.#movie.isWatched});
+    this.#changeData(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      {...this.#movie, isWatched: !this.#movie.isWatched}
+    );
   }
 
   #handlerFavoriteClick = () => {
-    this.#changeData({...this.#movie, isFavorite: !this.#movie.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      {...this.#movie, isFavorite: !this.#movie.isFavorite}
+    );
   }
 
   #handlerPopupWatchlistClick = () => {
-    this.#changeData({...this.#movie, isBookmark: !this.#movie.isBookmark});
+    this.#changeData(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      {...this.#movie, isBookmark: !this.#movie.isBookmark}
+    );
     this.#renderPopup(this.#movie, this.#popupComponent);
     this.#scrollBundle();
   }
 
   #handlerPopupWatchedClick = () => {
-    this.#changeData({...this.#movie, isWatched: !this.#movie.isWatched});
+    this.#changeData(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      {...this.#movie, isWatched: !this.#movie.isWatched}
+    );
     this.#renderPopup(this.#movie, this.#popupComponent);
     this.#scrollBundle();
   }
 
   #handlerPopupFavoriteClick = () => {
-    this.#changeData({...this.#movie, isFavorite: !this.#movie.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_MOVIE,
+      UpdateType.MINOR,
+      {...this.#movie, isFavorite: !this.#movie.isFavorite}
+    );
     this.#renderPopup(this.#movie, this.#popupComponent);
     this.#scrollBundle();
   }
