@@ -1,4 +1,3 @@
-const QUANTITY_CREATE_CARDS_START = 5;
 const QUANTITY_CREATE_CARDS_STEP = 5;
 const QUANTITY_CREATE_CARDS_EXTRA = 2;
 const POPUP_SCROLL = 0;
@@ -29,10 +28,30 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+};
+
+const FilterType = {
+  ALL: 'all',
+  WATCHLIST: 'watchlist',
+  WATCHED: 'watched',
+  FAVORITE: 'favorite',
+};
+
+const MenuItem = {
+  FILMS: 'FILMS',
+  STATISTICS: 'STATISTICS',
+};
+
+const StatisticsType = {
+  ALL: 'all-time',
+  TODAY: 'today',
+  WEEK: 'week',
+  MONTH: 'month',
+  YEAR: 'year',
 };
 
 export {
-  QUANTITY_CREATE_CARDS_START,
   QUANTITY_CREATE_CARDS_STEP,
   QUANTITY_CREATE_CARDS_EXTRA,
   KeysClose,
@@ -40,5 +59,8 @@ export {
   SortType,
   RenderPosition,
   UserAction,
-  UpdateType
+  UpdateType,
+  FilterType,
+  MenuItem,
+  StatisticsType
 };

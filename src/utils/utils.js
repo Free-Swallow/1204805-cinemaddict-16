@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {FilterType} from './constanta';
 
 const bySort = (field) => (b, a) => a[field] > b[field] ? 1 : -1;
 
@@ -51,4 +52,19 @@ function getTimeFromMins(mins) {
   return dayjs.duration({hours: time[0], minutes: time[1]}).format('H[h] m[m]');
 }
 
-export {bySort, getRandomNumber, getRandomFractionalNumber, getRandomNumberValues, updateItem, getTimeFromMins};
+const checkFilter = {
+  [FilterType.ALL]: (movies) => [...movies],
+  [FilterType.WATCHLIST]: (movies) => movies.filter((movie) => movie.isBookmark),
+  [FilterType.WATCHED]: (movies) => movies.filter((movie) => movie.isWatched),
+  [FilterType.FAVORITE]: (movies) => movies.filter((movie) => movie.isFavorite),
+};
+
+export {
+  bySort,
+  getRandomNumber,
+  getRandomFractionalNumber,
+  getRandomNumberValues,
+  updateItem,
+  getTimeFromMins,
+  checkFilter,
+};

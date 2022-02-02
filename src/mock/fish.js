@@ -183,7 +183,7 @@ const getCommentDate = () => {
 const renderComments = () =>(
   {
     emotion: listEmojis[getRandomNumber(0, listEmojis.length - 1)],
-    comment: listComments[getRandomNumber(0, listComments.length - 1)],
+    textComment: listComments[getRandomNumber(0, listComments.length - 1)],
     date: getCommentDate(),
     author: listNames[getRandomNumber(0, listNames.length - 1)],
     conditionEmoji: emoji[getRandomNumber(0, emoji.length - 1)],

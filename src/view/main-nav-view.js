@@ -1,34 +1,63 @@
 import AbstractView from './abstract-view.js';
+import {MenuItem} from '../utils/constanta.js';
 
-const createFilterItem = (film, isChecked) => {
-  const {name, number} = film;
+const createFilterItem = (filter, currentFilterType) => {
+  const {type, name, number} = filter;
 
   return (
-    `<a href="#${name}" class="main-navigation__item">${name} <span class="main-navigation__item-count" ${isChecked ? 'checked' : ''}
-    ${number === 0 ? 'disabled' : ''}>${number}</span></a>`
+    `<a href="#${name}" data-menu-type="${name === 'All movies' ? MenuItem.FILMS : ''}" class="main-navigation__item ${type === currentFilterType ? 'main-navigation__item--active' : ''}"
+    data-filter-type="${type}">${name}
+    <span class="${name !== 'All movies' ? 'main-navigation__item-count' : ''}"
+    >${name !== 'All movies' ? number : ''}</span></a>`
   );
 };
 
-const createMainNavTemplate = (data) => {
+const createMainNavTemplate = (data, currentFilterType) => {
   const filterItem = data
-    .map((filter, index) => createFilterItem(filter, index === 0))
+    .map((filter) => createFilterItem(filter, currentFilterType))
     .join('');
-  return `<div class="main-navigation__items">
-       <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
+  return `<nav class="main-navigation">
+    <div class="main-navigation__items" >
        ${filterItem}
-     </div>`;
+     </div>
+     <a href="#stats" data-menu-type="${MenuItem.STATISTICS}" class="main-navigation__additional">Stats</a>
+  </nav>`;
 };
 
 class MainNavView extends AbstractView {
   #filters = null;
+  #currentFilter = null;
+  #checkView = null;
 
-  constructor(filters) {
+  constructor(filters, currentFilterType, checkView) {
     super();
     this.#filters = filters;
+    this.#currentFilter = currentFilterType;
+    this.#checkView = checkView;
   }
 
   get template() {
-    return createMainNavTemplate(this.#filters);
+    return createMainNavTemplate(this.#filters, this.#currentFilter);
+  }
+
+  setFilterTypeChangeHandler = (callback) => {
+    this._callback.filterTypeChange = callback;
+    this.element.querySelector('.main-navigation__items').addEventListener('click', this.#filterTypeChangeHandler);
+  }
+
+  setMenuClickHandler = (callback) => {
+    this._callback.menuClick = callback;
+    this.element.addEventListener('click', this.#menuClickHandler);
+  }
+
+  #filterTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.filterTypeChange(evt.target.dataset.filterType);
+  }
+
+  #menuClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.menuClick(evt.target.dataset.menuType);
   }
 }
 

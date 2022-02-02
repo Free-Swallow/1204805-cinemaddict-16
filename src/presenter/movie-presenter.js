@@ -2,7 +2,6 @@ import CardView from '../view/card-view.js';
 import PopupFilmView from '../view/popup-film-view.js';
 import {remove, render, RenderPosition, replace} from '../utils/renderTemplate.js';
 import {KeysClose, POPUP_SCROLL, UpdateType, UserAction} from '../utils/constanta.js';
-import CommentsModel from '../model/comments-model.js';
 
 class MoviePresenter {
   #movieListContainer = null;
@@ -14,9 +13,10 @@ class MoviePresenter {
   #currentScroll = POPUP_SCROLL;
   #commentModal = null;
 
-  constructor(movieListContainer, changeData) {
+  constructor(movieListContainer, changeData, commentsModel) {
     this.#movieListContainer = movieListContainer;
     this.#changeData = changeData;
+    this.#commentModal = commentsModel;
   }
 
   #getCurrentScrollPopup = () => {
@@ -43,16 +43,8 @@ class MoviePresenter {
     const prevMovieComponent = this.#movieComponent;
     const prevPopupComponent = this.#popupComponent;
 
-    // Получение модели списка с комментариями одного фильма
-    this.#commentModal = new CommentsModel();
-    // Отправка списка комментариев в модель
-    this.#commentModal.comments = this.#movie.comments;
-
     this.#popupComponent = new PopupFilmView(this.#movie, this.#commentModal);
     this.#movieComponent = new CardView(this.#movie);
-
-    // Вызов первого комментария каждой карты
-    // console.log(this.#commentModal.comments[0]);
 
     this.#movieComponent.setWatchlistHandler(this.#handlerWatchlistClick);
     this.#movieComponent.setWatchedHandler(this.#handlerWatchedClick);
@@ -61,6 +53,7 @@ class MoviePresenter {
     this.#popupComponent.setPopupWatchlistHandler(this.#handlerPopupWatchlistClick);
     this.#popupComponent.setPopupWatchedHandler(this.#handlerPopupWatchedClick);
     this.#popupComponent.setPopupFavoriteHandler(this.#handlerPopupFavoriteClick);
+    this.#popupComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     this.#movieComponent.setClickHandler(() => {
       this.#closeOtherPopup();
@@ -168,6 +161,16 @@ class MoviePresenter {
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
       {...this.#movie, isFavorite: !this.#movie.isFavorite}
+    );
+    this.#renderPopup(this.#movie, this.#popupComponent);
+    this.#scrollBundle();
+  }
+
+  #handleDeleteClick = (movie) => {
+    this.#changeData(
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      movie,
     );
     this.#renderPopup(this.#movie, this.#popupComponent);
     this.#scrollBundle();
